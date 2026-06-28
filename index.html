@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriPredict-B12 - Plataforma Científica de Jean Carlos Ruiz Mosley</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for medical/nutritional icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- React and ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel for JSX compilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            body {
+                background-color: white !important;
+                color: black !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+    <div id="root"></div>
+
+    <!-- MAIN APP CODE IN REACT -->
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        // Constantes fisiológicas inalterables (Límites de saturación celular y metas)
+        const ABSORCION_MAXIMA_POR_COMIDA = 2.0; // µg (Techo del Factor Intrínseco)
+        const META_ABSORCION_DIARIA = 4.0; // µg (Recomendación diaria epidemiológica)
+
+        // Catálogo inmutable de alimentos con valores de vitamina B12 estáticos
+        const ALIMENTOS_INICIALES = [
+            { 
+                id: 'carne', 
+                nombreKey: 'food_meat', 
+                b12Porporcion: 2.0, 
+                porcionUnidadKey: 'unit_meat', 
+                icono: 'fa-solid fa-drumstick-bite',
+                permitePorciones: false,
+                offsetDia: 0 // Base de referencia
+            },
+            { 
+                id: 'huevo', 
+                nombreKey: 'food_egg', 
+                b12Porporcion: 0.5, 
+                porcionUnidadKey: 'unit_egg', 
+                icono: 'fa-solid fa-egg',
+                permitePorciones: true,
+                maxPorciones: 4,
+                offsetDia: 2 // Desplazado para evitar coincidencia con carne
+            },
+            { 
+                id: 'leche', 
+                nombreKey: 'food_milk', 
+                b12Porporcion: 1.0, 
+                porcionUnidadKey: 'unit_milk', 
+                icono: 'fa-solid fa-glass-water',
+                permitePorciones: true,
+                maxPorciones: 2,
+                offsetDia: 4 // Desplazado para evitar coincidencia con carne
+            },
+            { 
+                id: 'bebida_veg', 
+                nombreKey: 'food_plant_drink', 
+                b12Porporcion: 0.5, 
+                porcionUnidadKey: 'unit_plant_drink', 
+                icono: 'fa-solid fa-seedling',
+                permitePorciones: true,
+                maxPorciones: 2,
+                offsetDia: 1
+            },
+            { 
+                id: 'levadura', 
+                nombreKey: 'food_yeast', 
+                b12Porporcion: 2.0, 
+                porcionUnidadKey: 'unit_yeast', 
+                icono: 'fa-solid fa-spoon',
+                permitePorciones: false,
+                offsetDia: 3
+            }
+        ];
+
+        // Diccionario de Traducción Multilingüe (i18n)
+        const TRANSLATIONS = {
+            es: {
+                app_subtitle: 'Plataforma de Simulación Epidemiológica',
+                print_report: 'Imprimir Reporte',
+                export_csv: 'Exportar CSV',
+                methodology_title: 'Aviso de Rigor Metodológico',
+                methodology_desc: 'Esta herramienta es de uso de investigación. El modelo de simulación determinista NutriPredict-B12 Estimation Algorithm (NBEA v1.0) asume una semana estandarizada basada en frecuencias declaradas para evaluar la capacidad de asimilación bajo restricciones fisiológicas (techo inmutable de 2.0 µg por comida y meta de 4.0 µg diarios). No sustituye una evaluación clínica de biomarcadores sanguíneos. El motor de reparto implementa lógica de separación cruzada inteligente de alimentos para prevenir interacciones negativas en platos compartidos (evitando carne-lácteos, carne-huevo y huevo-carne).',
+                dietary_pattern: 'Patrón Alimentario',
+                select_diet: 'Seleccione la dieta del participante',
+                diet_vegan: 'Vegano',
+                diet_ovolacto: 'Ovolactovegetariano',
+                diet_flexi: 'Flexitariano',
+                diet_omni: 'Omnívoro',
+                supp_title: 'Suplementación con Cianocobalamina',
+                supp_active: 'Activo',
+                supp_desc: 'Si el participante consume un régimen farmacológico estandarizado, elígelo para evaluar su asimilación biológica celular. El algoritmo asignará la dosis diaria a las comidas con menor presencia de alimentos con B12.',
+                supp_regimen: 'Régimen de Suplementación',
+                supp_none: 'Ninguna / No documentado',
+                supp_daily_group: 'Patrones Diarios (Meta de 4 µg)',
+                supp_weekly_group: 'Patrones Semanales (Garantiza Adecuación Completa)',
+                supp_14_3x: '1.4 µg - 3 veces al día',
+                supp_5_1x: '5 µg - 1 vez al día',
+                supp_5_2x: '5 µg - 2 veces al día',
+                supp_100_1x: '100 µg - 1 vez al día',
+                supp_1000_3x: '1000 µg - 3 veces a la semana',
+                supp_1250_2x: '1250 µg - 2 veces a la semana',
+                supp_2500_1x: '2500 µg - 1 vez a la semana',
+                clinical_note: 'Nota clínica:',
+                clinical_note_desc: 'Si el participante no cumple exactamente con alguno de los patrones de suplementación listados anteriormente, no llenar esta casilla. En ese caso, la evaluación y el diagnóstico se basarán de forma exclusiva en la ingesta alimentaria del participante.',
+                ffq_title: 'Frecuencias FFQ',
+                ffq_subtitle: 'Consumo Semanal',
+                ffq_portion: 'Porción:',
+                ffq_days_week: 'Días/Semana',
+                ffq_times_day: 'Veces/Día',
+                ffq_portions: 'Porciones',
+                ffq_no_consume: 'No consume',
+                ffq_day: 'día',
+                ffq_days: 'días',
+                ffq_time: 'vez',
+                ffq_times: 'veces',
+                ffq_portion_unit: 'porc.',
+                ffq_portions_unit: 'porcs.',
+                metrics_compliance: 'Cumplimiento Semanal',
+                metrics_target: 'Meta: 4.0 µg de absorción diaria',
+                metrics_days_title: 'Días del Participante',
+                metrics_days_subtitle: '/ 7 cumplidos',
+                metrics_absorption_title: 'Absorción Estimada',
+                metrics_absorption_subtitle: 'Consumo modelado con el límite fisiológico saturable de 2.0 µg por comida y difusión pasiva.',
+                diagnostic_title: 'Diagnóstico NBEA v1.0',
+                diagnostic_severity: 'Gravedad de Riesgo Evaluada:',
+                diag_excellent: 'Excelente Adecuación',
+                diag_excellent_desc: 'El participante alcanza la recomendación fisiológica de vitamina B12 de manera regular y distribuida la mayor parte de la semana.',
+                diag_moderate: 'Adecuación Moderada',
+                diag_moderate_desc: 'Frecuencia de consumo media. Aunque hay días cubiertos, la distribución no es óptima para asegurar reservas celulares constantes.',
+                diag_low: 'Riesgo de Inadecuación Elevado',
+                diag_low_desc: 'El modelo virtual detecta fallos de asimilación por ingesta esporádica o bloqueada por el límite fisiológico por comida. Recomendable evaluar suplementación.',
+                diag_sev_low: 'Baja / Óptima',
+                diag_sev_mod: 'Moderada',
+                diag_sev_high: 'Alta',
+                week_reconstructed_title: 'Semana Virtual Reconstruida',
+                week_reconstructed_desc: 'El algoritmo separa inteligentemente los alimentos (Carne, Lácteos y Huevo) y distribuye dinámicamente la suplementación en las comidas con menor presencia de alimentos.',
+                week_simulation_tag: 'Simulación Virtual',
+                week_total_ingested: 'Total Ingerido:',
+                week_realized_abs: 'Absorción Realizada:',
+                week_no_events: 'Sin eventos de B12',
+                audit_title: 'Auditoría de Cálculo Paso a Paso',
+                audit_day: 'Día',
+                audit_breakfast: 'Desayuno (Ing/Abs)',
+                audit_lunch: 'Almuerzo (Ing/Abs)',
+                audit_dinner: 'Cena (Ing/Abs)',
+                audit_absorbed_day: 'Absorbido Día',
+                audit_meta_target: 'Meta (≥4.0µg)',
+                audit_met: 'CUMPLIDO',
+                audit_not_met: 'INSUPERADO',
+                scientific_title: 'Metodología y Algoritmo NBEA v1.0',
+                scientific_p1: 'El NutriPredict-B12 Estimation Algorithm (NBEA v1.0) es un modelo determinista y matemático diseñado para simular el comportamiento de absorción de vitamina B12 en el tracto intestinal.',
+                scientific_subtitle_1: 'Distribución Anticolisión Cruzada (Cross-Staggering)',
+                scientific_p2: 'En la práctica dietética habitual, ingerir múltiples fuentes concentradas de vitamina B12 en una única comida satura rápidamente los receptores de Factor Intrínseco, resultando en un desperdicio biológico del excedente. Para resolver esto y reflejar un escenario de consumo optimizado, el NBEA v1.0 asigna desfases dinámicos en los días y comidas para cada alimento. Así se previene de manera absoluta la coincidencia de Carne con Lácteos (leche), y Huevo con Carne en el mismo plato, maximizando la absorción neta.',
+                scientific_subtitle_2: 'Sinergia Dietética y Farmacológica Inteligente',
+                scientific_p3: 'El motor de asignación dinámico evalúa la carga de B12 de los alimentos en cada una de las 3 comidas virtuales diarias. Los suplementos diarios indicados se asignan prioritariamente a comidas libres. Si todas las comidas del día están ocupadas, el algoritmo localiza la comida que menor cantidad de B12 tiene, distribuyendo allí la cianocobalamina. Así se esquiva el límite de saturación de 2.0 µg y se valida la co-absorción libre de colisiones clínicas.',
+                pdf_author_tag: 'Autor del Software:',
+                pdf_evaluated_pattern: 'Patrón Dietético Evaluado:',
+                pdf_supp_tag: 'Suplementación Cianocobalamina:',
+                pdf_date_tag: 'Fecha de Generación:',
+                pdf_evaluator_tag: 'Algoritmo Evaluador: NBEA v1.0 determinista con desfase óptimo de absorción',
+                pdf_results_summary: 'Resumen de Métricas Clínicas Estimadas',
+                pdf_bullet_1: 'Ingesta diaria absorbida modelada: {val} µg promedio diarios.',
+                pdf_bullet_2: 'Días que cumplen la meta saludable diaria (≥4.0 µg): {val1} de 7 días ({val2}%).',
+                pdf_bullet_3: 'Nivel de Riesgo Epidemiológico: {val1} ({val2}).',
+                footer_author: 'Autor:',
+                footer_specialist: 'Nutricionista Dietista Especialista en Nutrición Basada en Plantas',
+                footer_thanks: 'Agradecimientos:',
+                footer_thanks_specialist: 'Nutricionista Dietista Especialista en Nutrición Vegetariana',
+                footer_simulation_tag: 'Simulador virtual de coincidencia y adecuación metabólica NBEA v1.0',
+                footer_license_panama: '🇵🇦 Creado en Panamá, 2026 | Distribuido bajo Licencia Creative Commons (CC BY-NC-SA 4.0)',
+                food_meat: 'Carne',
+                food_egg: 'Huevo',
+                food_milk: 'Leche',
+                food_plant_drink: 'Bebida vegetal fortificada',
+                food_yeast: 'Levadura nutricional fortificada',
+                unit_meat: '100g cocido',
+                unit_egg: '1 unidad (50g)',
+                unit_milk: '1 vaso (200ml)',
+                unit_plant_drink: '1 vaso (200ml)',
+                unit_yeast: '1 cucharada (5g)',
+                day_0: 'Lunes', day_1: 'Martes', day_2: 'Miércoles', day_3: 'Jueves', day_4: 'Viernes', day_5: 'Sábado', day_6: 'Domingo',
+                day_0_short: 'Lun', day_1_short: 'Mar', day_2_short: 'Mié', day_3_short: 'Jue', day_4_short: 'Vie', day_5_short: 'Sáb', day_6_short: 'Dom',
+                comida_0: 'Desayuno', comida_1: 'Almuerzo', comida_2: 'Cena',
+                suplemento_lbl: 'Suplemento'
+            },
+            en: {
+                app_subtitle: 'Epidemiological Simulation Platform',
+                print_report: 'Print Report',
+                export_csv: 'Export CSV',
+                methodology_title: 'Methodological Rigour Notice',
+                methodology_desc: 'This tool is for research purposes only. The deterministic simulation model NutriPredict-B12 Estimation Algorithm (NBEA v1.0) assumes a standardised week based on reported frequencies to evaluate assimilation capacity under physiological restrictions (immutable ceiling of 2.0 µg per meal and daily target of 4.0 µg). It does not replace a clinical assessment of blood biomarkers. The allocation engine implements smart food cross-separation logic to prevent negative interactions in shared meals (avoiding meat-dairy, meat-egg, and egg-dairy).',
+                dietary_pattern: 'Dietary Pattern',
+                select_diet: 'Select participant diet',
+                diet_vegan: 'Vegan',
+                diet_ovolacto: 'Ovo-lacto-vegetarian',
+                diet_flexi: 'Flexitarian',
+                diet_omni: 'Omnivore',
+                supp_title: 'Cyanocobalamin Supplementation',
+                supp_active: 'Active',
+                supp_desc: 'If the participant consumes a standardised pharmacological regimen, select it to evaluate cellular biological assimilation. The algorithm will assign the daily dose to the meals with the lowest presence of foods containing B12.',
+                supp_regimen: 'Supplementation Regimen',
+                supp_none: 'None / Not documented',
+                supp_daily_group: 'Daily Patterns (Target 4 µg)',
+                supp_weekly_group: 'Weekly Patterns (Guarantees Full Adequacy)',
+                supp_14_3x: '1.4 µg - 3 times a day',
+                supp_5_1x: '5 µg - 1 time a day',
+                supp_5_2x: '5 µg - 2 times a day',
+                supp_100_1x: '100 µg - 1 time a day',
+                supp_1000_3x: '1000 µg - 3 times a week',
+                supp_1250_2x: '1250 µg - 2 times a week',
+                supp_2500_1x: '2500 µg - 1 time a week',
+                clinical_note: 'Clinical note:',
+                clinical_note_desc: 'If the participant does not exactly match any of the supplementation patterns listed above, do not fill in this box. In that case, the evaluation and diagnosis will be based exclusively on the participant’s food intake.',
+                ffq_title: 'FFQ Frequencies',
+                ffq_subtitle: 'Weekly Consumption',
+                ffq_portion: 'Serving:',
+                ffq_days_week: 'Days/Week',
+                ffq_times_day: 'Times/Day',
+                ffq_portions: 'Servings',
+                ffq_no_consume: 'Does not consume',
+                ffq_day: 'day',
+                ffq_days: 'days',
+                ffq_time: 'time',
+                ffq_times: 'times',
+                ffq_portion_unit: 'srv.',
+                ffq_portions_unit: 'srvs.',
+                metrics_compliance: 'Weekly Compliance',
+                metrics_target: 'Target: 4.0 µg daily absorption',
+                metrics_days_title: 'Participant’s Days',
+                metrics_days_subtitle: '/ 7 met',
+                metrics_absorption_title: 'Estimated Absorption',
+                metrics_absorption_subtitle: 'Consumption modelled with the saturable physiological limit of 2.0 µg per meal and passive diffusion.',
+                diagnostic_title: 'NBEA v1.0 Diagnosis',
+                diagnostic_severity: 'Assessed Risk Severity:',
+                diag_excellent: 'Excellent Adequacy',
+                diag_excellent_desc: 'The participant regularly achieves the physiological recommendation of vitamin B12, distributed across most of the week.',
+                diag_moderate: 'Moderate Adequacy',
+                diag_moderate_desc: 'Average consumption frequency. Although some days are covered, the distribution is not optimal to ensure constant cellular reserves.',
+                diag_low: 'High Risk of Inadequacy',
+                diag_low_desc: 'The virtual model detects assimilation failures due to sporadic intake or blockage by the physiological limit per meal. Evaluation of supplementation is recommended.',
+                diag_sev_low: 'Low / Optimal',
+                diag_sev_mod: 'Moderate',
+                diag_sev_high: 'High',
+                week_reconstructed_title: 'Reconstructed Virtual Week',
+                week_reconstructed_desc: 'The algorithm intelligently separates foods (Meat, Dairy and Egg) and dynamically distributes the supplementation into meals with the lowest food presence.',
+                week_simulation_tag: 'Virtual Simulation',
+                week_total_ingested: 'Total Ingested:',
+                week_realized_abs: 'Absorption Realised:',
+                week_no_events: 'No B12 events',
+                audit_title: 'Step-by-Step Calculation Audit',
+                audit_day: 'Day',
+                audit_breakfast: 'Breakfast (Ing/Abs)',
+                audit_lunch: 'Lunch (Ing/Abs)',
+                audit_dinner: 'Dinner (Ing/Abs)',
+                audit_absorbed_day: 'Absorbed Day',
+                audit_meta_target: 'Target (≥4.0µg)',
+                audit_met: 'MET',
+                audit_not_met: 'UNMET',
+                scientific_title: 'Methodology and NBEA v1.0 Algorithm',
+                scientific_p1: 'The NutriPredict-B12 Estimation Algorithm (NBEA v1.0) is a mathematical and deterministic model designed to simulate vitamin B12 absorption behaviour in the human intestinal tract.',
+                scientific_subtitle_1: 'Cross-Staggering Distribution',
+                scientific_p2: 'In standard dietary practice, ingesting multiple concentrated sources of vitamin B12 in a single meal rapidly saturates the Intrinsic Factor receptors, resulting in biological waste of the surplus. To resolve this and reflect an optimised consumption scenario, NBEA v1.0 assigns dynamic offsets in days and meals for each food. This completely prevents the coincidence of Meat with Dairy (milk) and Egg with Meat in the same meal, maximising net absorption.',
+                scientific_subtitle_2: 'Smart Dietary and Pharmacological Synergy',
+                scientific_p3: 'The dynamic allocation engine evaluates the B12 load of foods in each of the 3 daily virtual meals. Indicated daily supplements are prioritised to empty meals. If all meals of the day are occupied, the algorithm locates the meal with the lowest amount of B12, distributing the cyanocobalamina there. This bypasses the saturation limit of 2.0 µg and validates co-absorption free of clinical collisions.',
+                pdf_author_tag: 'Software Author:',
+                pdf_evaluated_pattern: 'Evaluated Dietary Pattern:',
+                pdf_supp_tag: 'Cyanocobalamin Supplementation:',
+                pdf_date_tag: 'Generation Date:',
+                pdf_evaluator_tag: 'Evaluator Algorithm: Deterministic NBEA v1.0 with optimal absorption stagger',
+                pdf_results_summary: 'Summary of Estimated Clinical Metrics',
+                pdf_bullet_1: 'Modelled daily absorbed intake: {val} µg daily average.',
+                pdf_bullet_2: 'Days meeting the healthy daily target (≥4.0 µg): {val1} of 7 days ({val2}%).',
+                pdf_bullet_3: 'Epidemiological Risk Level: {val1} ({val2}).',
+                footer_author: 'Author:',
+                footer_specialist: 'Dietitian-Nutritionist, Specialist in Plant-Based Nutrition',
+                footer_thanks: 'Acknowledgements:',
+                footer_thanks_specialist: 'Dietitian-Nutritionist, Specialist in Vegetarian Nutrition',
+                footer_simulation_tag: 'Virtual simulation of metabolic coincidence and adequacy NBEA v1.0',
+                footer_license_panama: '🇵🇦 Created in Panama, 2026 | Distributed under Creative Commons Licence (CC BY-NC-SA 4.0)',
+                food_meat: 'Meat',
+                food_egg: 'Egg',
+                food_milk: 'Milk',
+                food_plant_drink: 'Fortified plant-based drink',
+                food_yeast: 'Fortified nutritional yeast',
+                unit_meat: '100g cooked',
+                unit_egg: '1 unit (50g)',
+                unit_milk: '1 cup (200ml)',
+                unit_plant_drink: '1 cup (200ml)',
+                unit_yeast: '1 tablespoon (5g)',
+                day_0: 'Monday', day_1: 'Tuesday', day_2: 'Wednesday', day_3: 'Thursday', day_4: 'Friday', day_5: 'Saturday', day_6: 'Sunday',
+                day_0_short: 'Mon', day_1_short: 'Tue', day_2_short: 'Wed', day_3_short: 'Thu', day_4_short: 'Fri', day_5_short: 'Sat', day_6_short: 'Sun',
+                comida_0: 'Breakfast', comida_1: 'Lunch', comida_2: 'Dinner',
+                suplemento_lbl: 'Supplement'
+            },
+            fi: {
+                app_subtitle: 'Epidemiologinen simulaatioalusta',
+                print_report: 'Tulosta raportti',
+                export_csv: 'Vie CSV',
+                methodology_title: 'Metodologinen huomautus',
+                methodology_desc: 'Tämä työkalu on tarkoitettu vain tutkimuskäyttöön. Deterministinen simulaatiomalli NutriPredict-B12 Estimation Algorithm (NBEA v1.0) olettaa ilmoitettujen tiheyksien perusteella standardoidun viikon, jolla arvioidaan assimilaatiokapasiteettia fysiologisten rajoitusten alaisena (muuttumaton katto 2.0 µg ateriaa kohti ja päivätavoite 4.0 µg). Se ei korvaa verikoetutkimuksia. Kohdennusmoottori toteuttaa älykkään ruokien ristiinerottelulogiikan ehkäistäkseen haitallisia yhteisvaikutuksia jaetuilla aterioilla (välttäen liha-maitotuotteita, liha-kananmunaa ja kananmuna-maitotuotteita).',
+                dietary_pattern: 'Ruokavaliomalli',
+                select_diet: 'Valitse osallistujan ruokavalio',
+                diet_vegan: 'Vegaani',
+                diet_ovolacto: 'Lakto-ovo-vegetaristi',
+                diet_flexi: 'Fleksitaristi',
+                diet_omni: 'Sekasyöjä',
+                supp_title: 'Syanokobalamiinilisäys',
+                supp_active: 'Aktiivinen',
+                supp_desc: 'Jos osallistuja käyttää standardoitua farmakologista hoito-ohjelmaa, valitse se solujen biologisen assimilaation arvioimiseksi. Algoritmi määrittää päiväannoksen aterioille, joilla on vähiten B12-vitamiinia sisältäviä ruokia.',
+                supp_regimen: 'Lisäravinneohjelma',
+                supp_none: 'Ei mitään / Ei dokumentoitu',
+                supp_daily_group: 'Päivittäiset mallit (Tavoite 4 µg)',
+                supp_weekly_group: 'Viikoittaiset mallit (Takaa täyden riittävyyden)',
+                supp_14_3x: '1.4 µg - 3 kertaa päivässä',
+                supp_5_1x: '5 µg - 1 kerran päivässä',
+                supp_5_2x: '5 µg - 2 kertaa päivässä',
+                supp_100_1x: '100 µg - 1 kerran päivässä',
+                supp_1000_3x: '1000 µg - 3 kertaa viikossa',
+                supp_1250_2x: '1250 µg - 2 kertaa viikossa',
+                supp_2500_1x: '2500 µg - 1 kerran viikossa',
+                clinical_note: 'Kliininen huomautus:',
+                clinical_note_desc: 'Jos osallistuja ei vastaa täsmälleen mitään yllä luetelluista lisäravinnemalleista, älä täytä tätä ruutua. Siinä tapauksessa arviointi ja diagnoosi perustuvat yksinomaan osallistujan ruokavalioon.',
+                ffq_title: 'FFQ-taajuudet',
+                ffq_subtitle: 'Viikoittainen kulutus',
+                ffq_portion: 'Annos:',
+                ffq_days_week: 'Päivää/Viikko',
+                ffq_times_day: 'Kertaa/Päivä',
+                ffq_portions: 'Annokset',
+                ffq_no_consume: 'Ei käytä',
+                ffq_day: 'päivä',
+                ffq_days: 'päivää',
+                ffq_time: 'kerran',
+                ffq_times: 'kertaa',
+                ffq_portion_unit: 'ann.',
+                ffq_portions_unit: 'ann.',
+                metrics_compliance: 'Viikoittainen toteutuminen',
+                metrics_target: 'Tavoite: 4.0 µg päivittäinen imeytyminen',
+                metrics_days_title: 'Osallistujan päivät',
+                metrics_days_subtitle: '/ 7 saavutettu',
+                metrics_absorption_title: 'Arvioitu imeytyminen',
+                metrics_absorption_subtitle: 'Kulutus mallinnettu aterioiden fysiologisella imeytymiskatolla (2.0 µg) ja passiivisella diffuusiolla.',
+                diagnostic_title: 'NBEA v1.0 -diagnoosi',
+                diagnostic_severity: 'Arvioitu riskitaso:',
+                diag_excellent: 'Erinomainen riittävyys',
+                diag_excellent_desc: 'Osallistuja saavuttaa säännöllisesti B12-vitamiinin fysiologisen suosituksen, joka jakautuu tasaisesti suurimmalle osalle viikkoa.',
+                diag_moderate: 'Kohtalainen riittävyys',
+                diag_moderate_desc: 'Keskimääräinen kulutustiheys. Vaikka jotkin päivät täyttyvät, jakautuminen ei ole optimaalinen solureservien jatkuvan ylläpidon kannalta.',
+                diag_low: 'Suuri riittämättömyyden riski',
+                diag_low_desc: 'Virtuaalimalli havaitsee imeytymispuutteita satunnaisen saannin tai aterioiden fysiologisen imeytymisrajan vuoksi. Lisäravinteiden arviointia suositellaan.',
+                diag_sev_low: 'Matala / Optimaalinen',
+                diag_sev_mod: 'Kohtalainen',
+                diag_sev_high: 'Korkea',
+                week_reconstructed_title: 'Hahmoteltu virtuaaliviikko',
+                week_reconstructed_desc: 'Algoritmi erottaa älykkäästi ruoat (Liha, Maitotuotteet ja Kananmuna) ja jakaa dynaamisesti lisäravinteet aterioille, joissa on vähiten muita ruokia.',
+                week_simulation_tag: 'Virtuaalinen simulaatio',
+                week_total_ingested: 'Kokonaissaanti:',
+                week_realized_abs: 'Toteutunut imeytyminen:',
+                week_no_events: 'Ei B12-lähteitä',
+                audit_title: 'Vaiheittainen laskennan auditointi',
+                audit_day: 'Päivä',
+                audit_breakfast: 'Aamiainen (Saanti/Imeytynyt)',
+                audit_lunch: 'Lounas (Saanti/Imeytynyt)',
+                audit_dinner: 'Illallinen (Saanti/Imeytynyt)',
+                audit_absorbed_day: 'Imeytynyt päivässä',
+                audit_meta_target: 'Tavoite (≥4.0µg)',
+                audit_met: 'TOTEUTUI',
+                audit_not_met: 'EI SAAVUTETTU',
+                scientific_title: 'Metodologia ja NBEA v1.0 -algoritmi',
+                scientific_p1: 'NutriPredict-B12 Estimation Algorithm (NBEA v1.0) on matemaattinen ja deterministinen malli, joka on suunniteltu simuloimaan B12-vitamiinin imeytymiskäyttäytymistä ihmisen suolistossa.',
+                scientific_subtitle_1: 'Ristiinporrastettu jakelu (Cross-Staggering)',
+                scientific_p2: 'Tavallisessa ruokavaliossa useiden keskittyneiden B12-vitamiinin lähteiden nauttiminen yhdellä aterialla tyydyttää nopeasti sisäisen tekijän (Intrinsic Factor) reseptorit, mikä johtaa ylimäärän biologiseen hukkaan. Tämän ratkaisemiseksi ja optimoidun kulutusskenaarion kuvaamiseksi NBEA v1.0 määrittää kullekin ruoalle dynaamiset viiveet päiville ja aterioille. Tämä estää kokonaan lihan ja maitotuotteiden tai kananmunan ja lihan osumisen samalle aterialle, mikä maksimoi nettoimeytymisen.',
+                scientific_subtitle_2: 'Älykäs ruokavalion ja farmakologian synergia',
+                scientific_p3: 'Dynaaminen kohdennusmoottori arvioi ruokien B12-kuormituksen jokaisella kolmella päivittäisellä virtuaaliaterialla. Päivittäiset lisäravinteet kohdennetaan ensisijaisesti tyhjille aterioille. Jos kaikki päivän ateriat ovat varattuja, algoritmi etsii aterian, jolla on vähiten B12-vitamiinia, ja sijoittaa syanokobalamiinin sinne. Tämä ohittaa 2.0 µg:n saturaatiorajan ja vahvistaa kliinisesti vapaan yhteisimeytymisen.',
+                pdf_author_tag: 'Ohjelmiston tekijä:',
+                pdf_evaluated_pattern: 'Arvioitu ruokavaliomalli:',
+                pdf_supp_tag: 'Syanokobalamiinilisäys:',
+                pdf_date_tag: 'Luontipäivämäärä:',
+                pdf_evaluator_tag: 'Arviointialgoritmi: Deterministinen NBEA v1.0 optimaalisella imeytymisen porrastuksella',
+                pdf_results_summary: 'Arvioitujen kliinisten mittareiden yhteenveto',
+                pdf_bullet_1: 'Mallinnettu päivittäinen imeytynyt saanti: {val} µg päivittäinen keskiarvo.',
+                pdf_bullet_2: 'Päivät, jotka täyttävät terveellisen päivätavoitteen (≥4.0 µg): {val1} / 7 päivää ({val2}%).',
+                pdf_bullet_3: 'Epidemiologinen riskitaso: {val1} ({val2}).',
+                footer_author: 'Tekijä:',
+                footer_specialist: 'Laillistettu ravitsemusterapeutti, kasvipohjaisen ravitsemuksen asiantuntija',
+                footer_thanks: 'Kiitokset:',
+                footer_thanks_specialist: 'Laillistettu ravitsemusterapeutti, kasvisruokavalion asiantuntija',
+                footer_simulation_tag: 'Metabolisen yhteensopivuuden ja riittävyyden virtuaalinen simulaattori NBEA v1.0',
+                footer_license_panama: '🇵🇦 Luotu Panamassa, 2026 | Jaettu Creative Commons -lisenssillä (CC BY-NC-SA 4.0)',
+                food_meat: 'Liha',
+                food_egg: 'Kananmuna',
+                food_milk: 'Maito',
+                food_plant_drink: 'Fiksattu kasvimaito',
+                food_yeast: 'Ravintoainesuunnattu hiiva',
+                unit_meat: '100g kypsennettynä',
+                unit_egg: '1 kpl (50g)',
+                unit_milk: '1 lasi (200ml)',
+                unit_plant_drink: '1 lasi (200ml)',
+                unit_yeast: '1 rkl (5g)',
+                day_0: 'Maanantai', day_1: 'Tiistai', day_2: 'Keskiviikko', day_3: 'Torstai', day_4: 'Perjantai', day_5: 'Lauantai', day_6: 'Sunnuntai',
+                day_0_short: 'Ma', day_1_short: 'Ti', day_2_short: 'Ke', day_3_short: 'To', day_4_short: 'Pe', day_5_short: 'La', day_6_short: 'Su',
+                comida_0: 'Aamiainen', comida_1: 'Lounas', comida_2: 'Illallinen',
+                suplemento_lbl: 'Lisäravinne'
+            },
+            de: {
+                app_subtitle: 'Epidemiologische Simulationsplattform',
+                print_report: 'Bericht drucken',
+                export_csv: 'CSV exportieren',
+                methodology_title: 'Hinweis zur methodischen Strenge',
+                methodology_desc: 'Dieses Tool dient ausschließlich Forschungszwecken. Das deterministische Simulationsmodell NutriPredict-B12 Estimation Algorithm (NBEA v1.0) nimmt eine standardisierte Woche basierend auf den gemeldeten Häufigkeiten an, um die Assimilationskapazität unter physiologischen Einschränkungen (unveränderliche Obergrenze von 2.0 µg pro Mahlzeit und Tagesziel von 4.0 µg) zu bewerten. Es ersetzt keine klinische Beurteilung von Blutbiomarkern. Das Verteilungssystem implementiert eine intelligente Kreuztrennung von Lebensmitteln, um negative Wechselwirkungen bei gemeinsamen Mahlzeiten zu verhindern (Vermeidung von Fleisch-Milchprodukten, Fleisch-Ei und Ei-Milchprodukten).',
+                dietary_pattern: 'Ernährungsmuster',
+                select_diet: 'Wählen Sie die Diät des Teilnehmers',
+                diet_vegan: 'Vegan',
+                diet_ovolacto: 'Ovo-Lacto-Vegetarisch',
+                diet_flexi: 'Flexitarisch',
+                diet_omni: 'Omnivor',
+                supp_title: 'Cyanocobalamin-Supplementierung',
+                supp_active: 'Aktiv',
+                supp_desc: 'Wenn der Teilnehmer ein standardisiertes pharmakologisches Regime einnimmt, wählen Sie dieses aus, um die zelluläre biologische Assimilation zu bewerten. Der Algorithmus weist die tägliche Dosis den Mahlzeiten mit dem geringsten Vorkommen von B12-haltigen Lebensmitteln zu.',
+                supp_regimen: 'Supplementierungsregime',
+                supp_none: 'Keine / Nicht dokumentiert',
+                supp_daily_group: 'Tägliche Muster (Ziel 4 µg)',
+                supp_weekly_group: 'Wöchentliche Muster (Garantiert vollständige Adäquanz)',
+                supp_14_3x: '1.4 µg - 3-mal täglich',
+                supp_5_1x: '5 µg - 1-mal täglich',
+                supp_5_2x: '5 µg - 2-mal täglich',
+                supp_100_1x: '100 µg - 1-mal täglich',
+                supp_1000_3x: '1000 µg - 3-mal wöchentlich',
+                supp_1250_2x: '1250 µg - 2-mal wöchentlich',
+                supp_2500_1x: '2500 µg - 1-mal wöchentlich',
+                clinical_note: 'Klinischer Hinweis:',
+                clinical_note_desc: 'Wenn der Teilnehmer keines der oben aufgeführten Supplementierungsmuster genau erfüllt, füllen Sie dieses Feld nicht aus. In diesem Fall basiert die Bewertung und Diagnose ausschließlich auf der Nahrungsaufnahme des Teilnehmers.',
+                ffq_title: 'FFQ-Häufigkeiten',
+                ffq_subtitle: 'Wöchentlicher Konsum',
+                ffq_portion: 'Portion:',
+                ffq_days_week: 'Tage/Woche',
+                ffq_times_day: 'Mal/Tag',
+                ffq_portions: 'Portionen',
+                ffq_no_consume: 'Kein Konsum',
+                ffq_day: 'Tag',
+                ffq_days: 'Tage',
+                ffq_time: 'Mal',
+                ffq_times: 'Mal',
+                ffq_portion_unit: 'Port.',
+                ffq_portions_unit: 'Port.',
+                metrics_compliance: 'Wöchentliche Erfüllung',
+                metrics_target: 'Ziel: 4.0 µg tägliche Absorption',
+                metrics_days_title: 'Tage des Teilnehmers',
+                metrics_days_subtitle: '/ 7 erfüllt',
+                metrics_absorption_title: 'Geschätzte Absorption',
+                metrics_absorption_subtitle: 'Konsum modelliert mit dem sättigbaren physiologischen Limit von 2.0 µg pro Mahlzeit und passiver Diffusion.',
+                diagnostic_title: 'NBEA v1.0 Diagnose',
+                diagnostic_severity: 'Bewerteter Risikograd:',
+                diag_excellent: 'Hervorragende Adäquanz',
+                diag_excellent_desc: 'Der Teilnehmer erreicht die physiologische Empfehlung von Vitamin B12 regelmäßig und über den größten Teil der Woche verteilt.',
+                diag_moderate: 'Mäßige Adäquanz',
+                diag_moderate_desc: 'Mittlere Konsumhäufigkeit. Obwohl einige Tage abgedeckt sind, ist die Verteilung nicht optimal, um konstante zelluläre Reserven zu gewährleisten.',
+                diag_low: 'Hohes Risiko einer unzureichenden Versorgung',
+                diag_low_desc: 'Das virtuelle Modell erkennt Assimilationsfehler aufgrund unregelmäßiger Aufnahme oder Blockierung durch die physiologische Grenze pro Mahlzeit. Eine Überprüfung der Supplementierung wird empfohlen.',
+                diag_sev_low: 'Niedrig / Optimal',
+                diag_sev_mod: 'Moderat',
+                diag_sev_high: 'Hoch',
+                week_reconstructed_title: 'Rekonstruierte virtuelle Woche',
+                week_reconstructed_desc: 'Der Algorithmus trennt Lebensmittel (Fleisch, Milchprodukte und Ei) intelligent und verteilt die Supplementierung dynamisch auf Mahlzeiten mit dem geringsten Vorkommen an Lebensmitteln.',
+                week_simulation_tag: 'Virtuelle Simulation',
+                week_total_ingested: 'Insgesamt aufgenommen:',
+                week_realized_abs: 'Realisierte Absorption:',
+                week_no_events: 'Keine B12-Ereignisse',
+                audit_title: 'Schritt-für-Schritt-Berechnungsaudit',
+                audit_day: 'Tag',
+                audit_breakfast: 'Frühstück (Aufn./Abs.)',
+                audit_lunch: 'Mittagessen (Aufn./Abs.)',
+                audit_dinner: 'Abendessen (Aufn./Abs.)',
+                audit_absorbed_day: 'Tag absorbiert',
+                audit_meta_target: 'Ziel (≥4.0µg)',
+                audit_met: 'ERFÜLLT',
+                audit_not_met: 'NICHT ERFÜLLT',
+                scientific_title: 'Methodik und NBEA v1.0-Algorithmus',
+                scientific_p1: 'Der NutriPredict-B12 Estimation Algorithm (NBEA v1.0) ist ein mathematisches und deterministisches Modell zur Simulation des Vitamin-B12-Absorptionsverhaltens im menschlichen Darmtrakt.',
+                scientific_subtitle_1: 'Kreuz-gestaffelte Verteilung (Cross-Staggering)',
+                scientific_p2: 'In der üblichen Ernährungspraxis sättigt die Aufnahme mehrerer konzentrierter Vitamin-B12-Quellen in einer einzigen Mahlzeit schnell die Intrinsic-Factor-Rezeptoren, was zu einer biologischen Verschwendung des Überschusses führt. Um dies zu lösen und ein optimiertes Konsumszenario widerzuspiegeln, weist NBEA v1.0 für jedes Lebensmittel dynamische Offsets in Tagen und Mahlzeiten zu. Dies verhindert vollständig das Zusammentreffen von Fleisch mit Milchprodukten (Milch) und Ei mit Fleisch in derselben Mahlzeit, wodurch die Nettoabsorption maximiert wird.',
+                scientific_subtitle_2: 'Intelligente diätetische und pharmakologische Synergie',
+                scientific_p3: 'Das dynamische Zuweisungssystem bewertet die B12-Ladung von Lebensmitteln in jeder der 3 täglichen virtuellen Mahlzeiten. Angezeigte tägliche Nahrungsergänzungsmittel werden vorrangig leeren Mahlzeiten zugewiesen. Wenn alle Mahlzeiten des Tages besetzt sind, sucht der Algorithmus nach der Mahlzeit mit der geringsten Menge an B12 und verteilt das Cyanocobalamin dort. Dies umgeht die Sättigungsgrenze von 2.0 µg und validiert eine klinisch freie Co-Absorption.',
+                pdf_author_tag: 'Software-Autor:',
+                pdf_evaluated_pattern: 'Evaluiertes Ernährungsmuster:',
+                pdf_supp_tag: 'Cyanocobalamin-Supplementierung:',
+                pdf_date_tag: 'Erstellungsdatum:',
+                pdf_evaluator_tag: 'Evaluierungsalgorithmus: Deterministisches NBEA v1.0 mit optimaler Absorptionsstaffelung',
+                pdf_results_summary: 'Zusammenfassung der geschätzten klinischen Metriken',
+                pdf_bullet_1: 'Modellierte täglich absorbierte Aufnahme: {val} µg im Tagesdurchschnitt.',
+                pdf_bullet_2: 'Tage, die das gesunde Tagesziel erfüllen (≥4.0 µg): {val1} von 7 Tagen ({val2}%).',
+                pdf_bullet_3: 'Epidemiologischer Risikograd: {val1} ({val2}).',
+                footer_author: 'Autor:',
+                footer_specialist: 'Diätassistent-Ernährungsberater, Spezialist für pflanzenbasierte Ernährung',
+                footer_thanks: 'Danksagung:',
+                footer_thanks_specialist: 'Diätassistent-Ernährungsberater, Spezialist für vegetarische Ernährung',
+                footer_simulation_tag: 'Virtueller Simulator für metabolische Koinzidenz und Adäquanz NBEA v1.0',
+                footer_license_panama: '🇵🇦 Erstellt in Panama, 2026 | Lizenziert unter Creative Commons (CC BY-NC-SA 4.0)',
+                food_meat: 'Fleisch',
+                food_egg: 'Ei',
+                food_milk: 'Milch',
+                food_plant_drink: 'Angereichertes pflanzliches Getränk',
+                food_yeast: 'Angereicherte Nährhefe',
+                unit_meat: '100g gekocht',
+                unit_egg: '1 Stück (50g)',
+                unit_milk: '1 Glas (200ml)',
+                unit_plant_drink: '1 Glas (200ml)',
+                unit_yeast: '1 Esslöffel (5g)',
+                day_0: 'Montag', day_1: 'Dienstag', day_2: 'Mittwoch', day_3: 'Donnerstag', day_4: 'Freitag', day_5: 'Samstag', day_6: 'Sonntag',
+                day_0_short: 'Mon', day_1_short: 'Dien', day_2_short: 'Mitt', day_3_short: 'Donn', day_4_short: 'Frei', day_5_short: 'Sam', day_6_short: 'Son',
+                comida_0: 'Frühstück', comida_1: 'Mittagessen', comida_2: 'Abendessen',
+                suplemento_lbl: 'Supplement'
+            },
+            it: {
+                app_subtitle: 'Piattaforma di Simulazione Epidemiologica',
+                print_report: 'Stampa Report',
+                export_csv: 'Esporta CSV',
+                methodology_title: 'Avviso di Rigore Metodologico',
+                methodology_desc: 'Questo strumento è destinato esclusivamente a scopi di ricerca. Il modello di simulazione deterministica NutriPredict-B12 Estimation Algorithm (NBEA v1.0) presuppone una settimana standardizzata basata sulle frequenze dichiarate per valutare la capacità di assimilazione sotto restrizioni fisiologiche (limite inalterabile di 2.0 µg per pasto e target giornaliero di 4.0 µg). Non sostituisce una valutazione clinica dei biomarcatori ematici. Il motore di allocazione implementa una logica di separazione incrociata intelligente degli alimenti per prevenire interazioni negative nei pasti condivisi (evitando carne-latticini, carne-uovo e uovo-latticini).',
+                dietary_pattern: 'Modello Dietetico',
+                select_diet: 'Seleziona la dieta del partecipante',
+                diet_vegan: 'Vegano',
+                diet_ovolacto: 'Ovolactovegetariano',
+                diet_flexi: 'Flexitariano',
+                diet_omni: 'Onnivoro',
+                supp_title: 'Integrazione con Cianocobalamina',
+                supp_active: 'Attivo',
+                supp_desc: 'Se il partecipante assume un regime farmacologico standardizzato, selezionalo per valutare l’assimilazione biologica cellulare. L’algoritmo assegnerà la dose giornaliera ai pasti con la minore presenza di alimenti contenenti B12.',
+                supp_regimen: 'Regime di Integrazione',
+                supp_none: 'Nessuno / Non documentato',
+                supp_daily_group: 'Modelli Giornalieri (Target 4 µg)',
+                supp_weekly_group: 'Modelli Settimanali (Garantisce Adeguatezza Completa)',
+                supp_14_3x: '1.4 µg - 3 volte al giorno',
+                supp_5_1x: '5 µg - 1 volta al giorno',
+                supp_5_2x: '5 µg - 2 volte al giorno',
+                supp_100_1x: '100 µg - 1 volta al giorno',
+                supp_1000_3x: '1000 µg - 3 volte a settimana',
+                supp_1250_2x: '1250 µg - 2 volte a settimana',
+                supp_2500_1x: '2500 µg - 1 volta a settimana',
+                clinical_note: 'Nota clinica:',
+                clinical_note_desc: 'Se il partecipante non soddisfa esattamente uno dei modelli di integrazione sopra elencati, non compilare questa casella. In tal caso, la valutazione e la diagnosi si baseranno esclusivamente sull’apporto alimentare del partecipante.',
+                ffq_title: 'Frequenze FFQ',
+                ffq_subtitle: 'Consumo Settimanale',
+                ffq_portion: 'Porzione:',
+                ffq_days_week: 'Giorni/Settimana',
+                ffq_times_day: 'Volte/Giorno',
+                ffq_portions: 'Porzioni',
+                ffq_no_consume: 'Non consuma',
+                ffq_day: 'giorno',
+                ffq_days: 'giorni',
+                ffq_time: 'volta',
+                ffq_times: 'volte',
+                ffq_portion_unit: 'porz.',
+                ffq_portions_unit: 'porz.',
+                metrics_compliance: 'Conformità Settimanale',
+                metrics_target: 'Target: 4.0 µg di assorbimento giornaliero',
+                metrics_days_title: 'Giorni del Partecipante',
+                metrics_days_subtitle: '/ 7 soddisfatti',
+                metrics_absorption_title: 'Assorbimento Stimato',
+                metrics_absorption_subtitle: 'Consumo modellato con il limite fisiologico saturabile di 2.0 µg per pasto e diffusione passiva.',
+                diagnostic_title: 'Diagnosi NBEA v1.0',
+                diagnostic_severity: 'Gravità del Rischio Valutata:',
+                diag_excellent: 'Adeguatezza Eccellente',
+                diag_excellent_desc: 'Il partecipante raggiunge la raccomandazione fisiologica di vitamina B12 in modo regolare e distribuito su gran parte della settimana.',
+                diag_moderate: 'Adeguatezza Moderata',
+                diag_moderate_desc: 'Frequenza di consumo media. Sebbene alcuni giorni siano coperti, la distribuzione non è ottimale per garantire riserve cellulari costanti.',
+                diag_low: 'Rischio Elevato di Inadeguatezza',
+                diag_low_desc: 'Il modello virtuale rileva fallimenti di assimilazione dovuti a un’assunzione sporadica o al blocco causato dal limite fisiologico per pasto. Si consiglia di valutare un’integrazione.',
+                diag_sev_low: 'Basso / Ottimale',
+                diag_sev_mod: 'Moderato',
+                diag_sev_high: 'Alto',
+                week_reconstructed_title: 'Settimana Virtuale Ricostruita',
+                week_reconstructed_desc: 'L’algoritmo separa intelligentemente gli alimenti (Carne, Latticini e Uova) e distribuisce dinamicamente l’integrazione nei pasti con la minore presenza di alimenti.',
+                week_simulation_tag: 'Simulazione Virtuale',
+                week_total_ingested: 'Totale Ingerito:',
+                week_realized_abs: 'Assorbimento Realizzato:',
+                week_no_events: 'Nessun evento B12',
+                audit_title: 'Audit di Calcolo Passo-Passo',
+                audit_day: 'Giorno',
+                audit_breakfast: 'Colazione (Ing/Abs)',
+                audit_lunch: 'Pranzo (Ing/Abs)',
+                audit_dinner: 'Cena (Ing/Abs)',
+                audit_absorbed_day: 'Assorbito Giorno',
+                audit_meta_target: 'Target (≥4.0µg)',
+                audit_met: 'SODDISFATTO',
+                audit_not_met: 'NON SODDISFATTO',
+                scientific_title: 'Metodologia e Algoritmo NBEA v1.0',
+                scientific_p1: 'Il NutriPredict-B12 Estimation Algorithm (NBEA v1.0) è un modello deterministico e matematico progettato per simulare il comportamento di assorbimento della vitamina B12 nel tratto intestinale umano.',
+                scientific_subtitle_1: 'Distribuzione Anticolisione Incrociata (Cross-Staggering)',
+                scientific_p2: 'Nella pratica dietetica comune, l’ingestione di più fonti concentrate di vitamina B12 in un unico pasto satura rapidamente i recettori del Fattore Intrinseco, determinando uno spreco biologico del surplus. Per risolvere questo problema e riflettere uno scenario di consumo ottimizzato, NBEA v1.0 assegna offset dinamici nei giorni e nei pasti per ciascun alimento. Ciò impedisce completamente la coincidenza di Carne con Latticini (latte) e Uovo con Carne nello stesso pasto, massimizzando l’assorbimento netto.',
+                scientific_subtitle_2: 'Sinergia Dietetica e Farmacologica Intelligente',
+                scientific_p3: 'Il motore di allocazione dinamica valuta il carico di B12 degli alimenti in ciascuno dei 3 pasti virtuali giornalieri. Gli integratori giornalieri indicati sono prioritari per i pasti liberi. Se tutti i pasti della giornata sono occupati, l’algoritmo individua il pasto con la minor quantità di B12, distribuendo lì la cianocobalamina. Ciò bypassa il limite di saturazione di 2.0 µg e convalida una co-assimilazione priva di collisioni cliniche.',
+                pdf_author_tag: 'Autore del Software:',
+                pdf_evaluated_pattern: 'Modello Dietetico Valutato:',
+                pdf_supp_tag: 'Integrazione Cianocobalamina:',
+                pdf_date_tag: 'Data di Generazione:',
+                pdf_evaluator_tag: 'Algoritmo Valutatore: NBEA v1.0 deterministico con sfasamento ottimale dell’assorbimento',
+                pdf_results_summary: 'Riepilogo delle Metriche Cliniche Stimate',
+                pdf_bullet_1: 'Assunzione giornaliera assorbita modellata: {val} µg di media giornaliera.',
+                pdf_bullet_2: 'Giorni che soddisfano il target di salute giornaliero (≥4.0 µg): {val1} di 7 giorni ({val2}%).',
+                pdf_bullet_3: 'Livello di Rischio Epidemiologico: {val1} ({val2}).',
+                footer_author: 'Autore:',
+                footer_specialist: 'Dietista-Nutrizionista, Specialista in Nutrizione a Base Vegetale',
+                footer_thanks: 'Ringraziamenti:',
+                footer_thanks_specialist: 'Dietista-Nutrizionista, Specialista in Nutrizione Vegetariana',
+                footer_simulation_tag: 'Simulatore virtuale di coincidenza e adeguatezza metabolica NBEA v1.0',
+                footer_license_panama: '🇵🇦 Creato a Panama, 2026 | Distribuito sotto Licenza Creative Commons (CC BY-NC-SA 4.0)',
+                food_meat: 'Carne',
+                food_egg: 'Uovo',
+                food_milk: 'Latte',
+                food_plant_drink: 'Bevanda vegetale fortificata',
+                food_yeast: 'Lievito nutrizionale fortificato',
+                unit_meat: '100g cotto',
+                unit_egg: '1 unità (50g)',
+                unit_milk: '1 bicchiere (200ml)',
+                unit_plant_drink: '1 bicchiere (200ml)',
+                unit_yeast: '1 cucchiaio (5g)',
+                day_0: 'Lunedì', day_1: 'Martedì', day_2: 'Mercoledì', day_3: 'Giovedì', day_4: 'Venerdì', day_5: 'Sabato', day_6: 'Domenica',
+                day_0_short: 'Lun', day_1_short: 'Mar', day_2_short: 'Mer', day_3_short: 'Gio', day_4_short: 'Ven', day_5_short: 'Sab', day_6_short: 'Dom',
+                comida_0: 'Colazione', comida_1: 'Pranzo', comida_2: 'Cena',
+                suplemento_lbl: 'Integratore'
+            },
+            ko: {
+                app_subtitle: '역학 시뮬레이션 플랫폼',
+                print_report: '보고서 인쇄',
+                export_csv: 'CSV 내보내기',
+                methodology_title: '방법론적 엄격성 고지',
+                methodology_desc: '이 도구는 연구 목적으로만 사용됩니다. 결정론적 시뮬레이션 모델인 NutriPredict-B12 Estimation Algorithm (NBEA v1.0)은 생리적 제한(끼니당 2.0 µg의 고정된 상한선 및 일일 목표 4.0 µg) 하에서 동화 능력을 평가하기 위해 보고된 빈도를 기반으로 한 표준화된 일주일을 가정합니다. 이것은 혈액 바이오마커의 임상적 평가를 대체하지 않습니다. 배정 엔진은 공유 식사에서 부정적인 상호 작용을 방지하기 위해 스마트한 식품 교차 분리 로직을 구현합니다(고기-유제품, 고기-계란, 계란-유제품 방지).',
+                dietary_pattern: '식사 패턴',
+                select_diet: '참가자 식단 선택',
+                diet_vegan: '비건',
+                diet_ovolacto: '오보락토베지테리언',
+                diet_flexi: '플렉시테리언',
+                diet_omni: '잡식성',
+                supp_title: '시아노코발라민 보충',
+                supp_active: '활성화',
+                supp_desc: '참가자가 표준화된 약리학적 요법을 섭취하는 경우, 이를 선택하여 세포 생물학적 동화를 평가합니다. 알고리즘은 B12 함유 식품이 가장 적은 식사에 일일 복용량을 배정합니다.',
+                supp_regimen: '보충 요법',
+                supp_none: '없음 / 문서화되지 않음',
+                supp_daily_group: '일일 패턴 (목표 4 µg)',
+                supp_weekly_group: '주간 패턴 (완전한 적절성 보장)',
+                supp_14_3x: '1.4 µg - 하루 3회',
+                supp_5_1x: '5 µg - 하루 1회',
+                supp_5_2x: '5 µg - 하루 2회',
+                supp_100_1x: '100 µg - 하루 1회',
+                supp_1000_3x: '1000 µg - 주 3회',
+                supp_1250_2x: '1250 µg - 주 2회',
+                supp_2500_1x: '2500 µg - 주 1회',
+                clinical_note: '임상 참고 사항:',
+                clinical_note_desc: '참가자가 위에 열거된 보충 패턴 중 어느 것과도 정확히 일치하지 않는 경우 이 상자를 채우지 마십시오. 이 경우 평가 및 진단은 오직 참가자의 음식 섭취량만을 기준으로 합니다.',
+                ffq_title: 'FFQ 빈도',
+                ffq_subtitle: '주간 소비량',
+                ffq_portion: '1회 제공량:',
+                ffq_days_week: '일/주',
+                ffq_times_day: '회/일',
+                ffq_portions: '제공량',
+                ffq_no_consume: '섭취하지 않음',
+                ffq_day: '일',
+                ffq_days: '일',
+                ffq_time: '회',
+                ffq_times: '회',
+                ffq_portion_unit: '인분',
+                ffq_portions_unit: '인분',
+                metrics_compliance: '주간 충족도',
+                metrics_target: '목표: 일일 4.0 µg 흡수',
+                metrics_days_title: '참가자의 달성일',
+                metrics_days_subtitle: '/ 7일 달성',
+                metrics_absorption_title: '추정 흡수량',
+                metrics_absorption_subtitle: '끼니당 2.0 µg의 포화성 생리적 한계 및 수동 확산으로 모델링된 소비량.',
+                diagnostic_title: 'NBEA v1.0 진단',
+                diagnostic_severity: '평가된 위험 심각도:',
+                diag_excellent: '우수한 적절성',
+                diag_excellent_desc: '참가자는 일주일 대부분에 걸쳐 비타민 B12의 생리적 권장 사항을 정기적으로 골고루 달성하고 있습니다.',
+                diag_moderate: '보통의 적절성',
+                diag_moderate_desc: '평균적인 소비 빈도입니다. 일부 일수가 충족되더라도 지속적인 세포 저장량을 확보하기에 분배가 최적화되어 있지 않습니다.',
+                diag_low: '높은 부적절성 위험',
+                diag_low_desc: '가상 모델은 간헐적인 섭취 또는 끼니당 생리적 한계에 의한 차단으로 인한 동화 실패를 감지합니다. 보충제 섭취 평가를 권장합니다.',
+                diag_sev_low: '낮음 / 최적',
+                diag_sev_mod: '보통',
+                diag_sev_high: '높음',
+                week_reconstructed_title: '재구성된 가상 일주일',
+                week_reconstructed_desc: '알고리즘은 영리하게 식품(고기, 유제품, 계란)을 분리하고 식품이 가장 적은 식사에 보충제를 동적으로 배정합니다.',
+                week_simulation_tag: '가상 시뮬레이션',
+                week_total_ingested: '총 섭취량:',
+                week_realized_abs: '실제 흡수량:',
+                week_no_events: 'B12 식품 없음',
+                audit_title: '단계별 계산 감사',
+                audit_day: '일',
+                audit_breakfast: '아침 (섭취/흡수)',
+                audit_lunch: '점심 (섭취/흡수)',
+                audit_dinner: '저녁 (섭취/흡수)',
+                audit_absorbed_day: '하루 흡수량',
+                audit_meta_target: '목표 (≥4.0µg)',
+                audit_met: '충족',
+                audit_not_met: '미달',
+                scientific_title: '방법론 및 NBEA v1.0 알고리즘',
+                scientific_p1: 'NutriPredict-B12 Estimation Algorithm (NBEA v1.0)은 인간의 장관 내에서 비타민 B12 흡수 행동을 시뮬레이션하기 위해 설계된 수학적 및 결정론적 모델입니다.',
+                scientific_subtitle_1: '상호 교차 시차 분배 (Cross-Staggering)',
+                scientific_p2: '일반적인 식생활에서 한 끼에 여러 집중된 비타민 B12 공급원을 섭취하면 내인자(Intrinsic Factor) 수용체가 빠르게 포화되어 초과분이 생물학적으로 낭비됩니다. 이를 해결하고 최적화된 소비 시나리오를 반영하기 위해 NBEA v1.0은 각 식품에 대해 요일 및 식사에 동적 시차(offset)를 부여합니다. 이로써 고기와 유제품(우유) 및 계란과 고기가 동일한 식사에 겹치는 것을 완벽히 방지하여 순 흡수량을 극대화합니다.',
+                scientific_subtitle_2: '스마트한 식사 및 약리학적 시너지',
+                scientific_p3: '동적 배정 엔진은 일일 3회의 가상 식사 각각에서 식품의 B12 부하를 평가합니다. 지정된 일일 보충제는 비어 있는 식사에 우선적으로 배정됩니다. 만약 하루의 모든 식사가 채워져 있다면, 알고리즘은 B12가 가장 적은 식사를 찾아 시아노코발라민을 그곳에 분배합니다. 이는 2.0 µg의 포화 한계를 우회하고 임상적 충돌이 없는 공동 흡수를 검증합니다.',
+                pdf_author_tag: '소프트웨어 저자:',
+                pdf_evaluated_pattern: '평가된 식사 패턴:',
+                pdf_supp_tag: '시아노코발라민 보충 여부:',
+                pdf_date_tag: '생성 날짜:',
+                pdf_evaluator_tag: '평가 알고리즘: 최적 흡수 시차를 적용한 결정론적 NBEA v1.0',
+                pdf_results_summary: '추정된 임상 지표 요약',
+                pdf_bullet_1: '모델링된 일일 흡수 섭취량: 일평균 {val} µg.',
+                pdf_bullet_2: '건강한 일일 목표(≥4.0 µg)를 충족한 일수: 7일 중 {val1}일 ({val2}%).',
+                pdf_bullet_3: '역학적 위험 수준: {val1} ({val2}).',
+                footer_author: '저자:',
+                footer_specialist: '임상영양사, 식물성 기반 영양 전문가',
+                footer_thanks: '감사의 글:',
+                footer_thanks_specialist: '임상영양사, 채식 영양 전문가',
+                footer_simulation_tag: '대사 일치 및 적절성 가상 시뮬레이터 NBEA v1.0',
+                footer_license_panama: '🇵🇦 파나마에서 제작, 2026년 | 크리에이티브 커먼즈 라이선스(CC BY-NC-SA 4.0)로 배포',
+                food_meat: '고기',
+                food_egg: '계란',
+                food_milk: '우유',
+                food_plant_drink: '강화 식물성 음료',
+                food_yeast: '강화 영양 효모',
+                unit_meat: '100g 조리 후',
+                unit_egg: '1개 (50g)',
+                unit_milk: '1컵 (200ml)',
+                unit_plant_drink: '1컵 (200ml)',
+                unit_yeast: '1큰술 (5g)',
+                day_0: '월요일', day_1: '화요일', day_2: '수요일', day_3: '목요일', day_4: '금요일', day_5: '토요일', day_6: '일요일',
+                day_0_short: '월', day_1_short: '화', day_2_short: '수', day_3_short: '목', day_4_short: '금', day_5_short: '토', day_6_short: '일',
+                comida_0: '아침', comida_1: '점심', comida_2: '저녁',
+                suplemento_lbl: '보충제'
+            },
+            ja: {
+                app_subtitle: '疫学シミュレーションプラットフォーム',
+                print_report: 'レポートを印刷',
+                export_csv: 'CSVをエクスポート',
+                methodology_title: '方法論的厳格さに関する通知',
+                methodology_desc: 'このツールは研究目的のみに使用されます。決定論的シミュレーションモデルであるNutriPredict-B12 Estimation Algorithm (NBEA v1.0)は、生理学的制限（食事あたり2.0 µgの不変の限界および日目標4.0 µg）下での同化能力を評価するために、申告された頻度に基づく標準化された1週間を想定しています。これは血液バイ오マーカーの臨床的評価に代わるものではありません。配分エンジンは、共有の食事における悪影響を防止するために、スマートな食品交差分離ロジックを実装しています（肉と乳製品、肉と卵、卵と乳製品の組み合わせを防止）。',
+                dietary_pattern: '食事パターン',
+                select_diet: '対象者の食事スタイルを選択',
+                diet_vegan: 'ビーガン',
+                diet_ovolacto: '卵乳菜食',
+                diet_flexi: 'フレキシタリアン',
+                diet_omni: '雑食',
+                supp_title: 'シアノコバラミン補給',
+                supp_active: '有効',
+                supp_desc: '対象者が標準化された薬理学的治療を行っている場合は、それを選択して細胞の生物学的同化を評価します。アルゴリズムは、B12含有食品が最も少ない食事に一日の服用量を割り当てます。',
+                supp_regimen: '補給プログラム',
+                supp_none: 'なし / 記録なし',
+                supp_daily_group: '一日あたりのパターン（目標 4 µg）',
+                supp_weekly_group: '一週間あたりのパターン（完全な充足を保証）',
+                supp_14_3x: '1.4 µg - 一日3回',
+                supp_5_1x: '5 µg - 一日1回',
+                supp_5_2x: '5 µg - 一日2回',
+                supp_100_1x: '100 µg - 一日1回',
+                supp_1000_3x: '1000 µg - 週3回',
+                supp_1250_2x: '1250 µg - 週2回',
+                supp_2500_1x: '2500 µg - 週1回',
+                clinical_note: '臨床的注意事項:',
+                clinical_note_desc: '対象者が上記の補給パターンのいずれにも正確に一致しない場合は、この欄に入力しないでください。その場合、評価と診断は対象者の食事摂取のみに基づいて行われます。',
+                ffq_title: 'FFQ頻度',
+                ffq_subtitle: '週あたりの消費量',
+                ffq_portion: '1回提供量:',
+                ffq_days_week: '日/週',
+                ffq_times_day: '回/日',
+                ffq_portions: '提供量',
+                ffq_no_consume: '摂取しない',
+                ffq_day: '日',
+                ffq_days: '日',
+                ffq_time: '回',
+                ffq_times: '回',
+                ffq_portion_unit: '分',
+                ffq_portions_unit: '分',
+                metrics_compliance: '週あたりの達成率',
+                metrics_target: '目標：一日あたり4.0 µgの吸収',
+                metrics_days_title: '対象者の達成日数',
+                metrics_days_subtitle: '/ 7日達成',
+                metrics_absorption_title: '推定吸収量',
+                metrics_absorption_subtitle: '食事あたり2.0 µgの飽和性生理学的限界および受動拡散でモデル化された消費。',
+                diagnostic_title: 'NBEA v1.0 診断',
+                diagnostic_severity: '評価されたリスクの深刻度:',
+                diag_excellent: '優れた充足状態',
+                diag_excellent_desc: '対象者は、ビタミンB12の生理学的推奨量を定期的かつ一週間の大部分に均等に達成しています。',
+                diag_moderate: '適切な充足状態',
+                diag_moderate_desc: '平均的な消費頻度です。一部の日が満たされていても、持続的な細胞貯蔵を確保するための配分が最適化されていません。',
+                diag_low: '不十分な供給の高度なリスク',
+                diag_low_desc: '仮想モデルは、不定期な摂取または食事あたりの生理学的限界による遮断による同化の失敗を検出します。サプリメント摂取の検討をお勧めします。',
+                diag_sev_low: '低い / 最適',
+                diag_sev_mod: '中程度',
+                diag_sev_high: '高い',
+                week_reconstructed_title: '再構成された仮想の1週間',
+                week_reconstructed_desc: 'アルゴリズムは、食品（肉、乳製品、卵）を賢く分離し、食品が最も少ない食事にサプリメントを動的に分配します。',
+                week_simulation_tag: '仮想シミュレーション',
+                week_total_ingested: '総摂取量:',
+                week_realized_abs: '実際の吸収量:',
+                week_no_events: 'B12食品なし',
+                audit_title: 'ステップバイステップ計算監査',
+                audit_day: '日',
+                audit_breakfast: '朝食 (摂取/吸収)',
+                audit_lunch: '昼食 (摂取/吸収)',
+                audit_dinner: '夕食 (摂取/吸収)',
+                audit_absorbed_day: '一日吸収量',
+                audit_meta_target: '目標 (≥4.0µg)',
+                audit_met: '達成',
+                audit_not_met: '未達成',
+                scientific_title: '方法論とNBEA v1.0アルゴリズム',
+                scientific_p1: 'NutriPredict-B12 Estimation Algorithm (NBEA v1.0)は、人間の腸管内でのビタミンB12吸収挙動をシミュレートするために設計された数学的かつ決定論的なモデルです。',
+                scientific_subtitle_1: '相互交差スタッガー配分 (Cross-Staggering)',
+                scientific_p2: '通常の食生活において、一度の食事で複数の高濃度ビタミンB12源を摂取すると、内因子（Intrinsic Factor）受容体が急速に飽和し、過剰分が生物学的に浪費されます。これを解決し、最適化された消費シナリオを反映するために、NBEA v1.0は各食品に対して曜日と食事に動的な時差（offset）を付与します。これにより、肉と乳製品（牛乳）および卵と肉が同じ食事に重複することを完全に防止し、純吸収量を最大化します。',
+                scientific_subtitle_2: 'スマートな食事と薬理学的シナジー',
+                scientific_p3: '動的分配エンジンは、日々の3回の仮想食事それぞれで食品のB12負荷を評価します。指定された日々のサプリメントは、空いている食事に優先的に割り当てられます。もし一日のすべての食事が埋まっている場合、アルゴリズムはB12が最も少ない食事を特定し、そこにシアノコバラミンを分配します。これにより、2.0 µgの飽和限界を迂回し、臨床的衝突のない共同吸収を検証します。',
+                pdf_author_tag: 'ソフトウェア作成者:',
+                pdf_evaluated_pattern: '評価された食事スタイル:',
+                pdf_supp_tag: 'シアノコバラミンサプリメント補給:',
+                pdf_date_tag: '作成日付:',
+                pdf_evaluator_tag: '評価アルゴリズム：最適な吸収時差を適用した決定論的NBEA v1.0',
+                pdf_results_summary: '推定臨床指標サマリー',
+                pdf_bullet_1: 'モデル化された一日の吸収摂取量：一日平均 {val} µg。',
+                pdf_bullet_2: '健康な日目標（≥4.0 µg）を満たした日数：7日中 {val1}日 ({val2}%）。',
+                pdf_bullet_3: '疫学的リスクレベル：{val1} ({val2}）。',
+                footer_author: '作成者:',
+                footer_specialist: '管理栄養士、植物性栄養学スペシャリスト',
+                footer_thanks: '謝辞:',
+                footer_thanks_specialist: '管理栄養士、菜食栄養学スペシャリスト',
+                footer_simulation_tag: '代謝合致および充足仮想シミュレーター NBEA v1.0',
+                footer_license_panama: '🇵🇦 パナマにて作成、2026年 | クリエイティブ・コモンズ・ライセンス（CC BY-NC-SA 4.0）で配布',
+                food_meat: '肉',
+                food_egg: '卵',
+                food_milk: '牛乳',
+                food_plant_drink: '強化植物性ミルク',
+                food_yeast: '強化ニュートリショナルイースト',
+                unit_meat: '100g 調理後',
+                unit_egg: '1個 (50g)',
+                unit_milk: '1コップ (200ml)',
+                unit_plant_drink: '1コップ (200ml)',
+                unit_yeast: '1大さじ (5g)',
+                day_0: '月曜日', day_1: '火曜日', day_2: '水曜日', day_3: '木曜日', day_4: '金曜日', day_5: '土曜日', day_6: '日曜日',
+                day_0_short: '月', day_1_short: '火', day_2_short: '水', day_3_short: '木', day_4_short: '金', day_5_short: '土', day_6_short: '日',
+                comida_0: '朝食', comida_1: '昼食', comida_2: '夕食',
+                suplemento_lbl: 'サプリメント'
+            }
+        };
+
+        const DIAS_SEMANA = [
+            { id: 0, shortKey: 'day_0_short', nameKey: 'day_0' },
+            { id: 1, shortKey: 'day_1_short', nameKey: 'day_1' },
+            { id: 2, fontBold: true, shortKey: 'day_2_short', nameKey: 'day_2' },
+            { id: 3, shortKey: 'day_3_short', nameKey: 'day_3' },
+            { id: 4, shortKey: 'day_4_short', nameKey: 'day_4' },
+            { id: 5, shortKey: 'day_5_short', nameKey: 'day_5' },
+            { id: 6, shortKey: 'day_6_short', nameKey: 'day_6' }
+        ];
+
+        // Mapeo base de días de la semana con distribución uniforme para maximizar separación temporal
+        const mapDiasDeterministas = (numDias) => {
+            switch (numDias) {
+                case 1: return [2]; // Miércoles
+                case 2: return [1, 4]; // Martes, Viernes
+                case 3: return [0, 2, 5]; // Lunes, Miércoles, Sábado
+                case 4: return [0, 1, 3, 5]; // Lunes, Martes, Jueves, Sábado
+                case 5: return [0, 1, 2, 4, 6]; // Lunes, Martes, Miércoles, Viernes, Domingo
+                case 6: return [0, 1, 3, 4, 5, 6]; // Todos excepto Miércoles
+                case 7: return [0, 1, 2, 3, 4, 5, 6]; // Todos los días
+                default: return [];
+            }
+        };
+
+        // Distribución inteligente de comidas según la frecuencia del alimento para evitar colisiones críticas
+        const mapComidasPorVeces = (vecesAlDia, foodId) => {
+            if (vecesAlDia === 1) {
+                switch(foodId) {
+                    case 'carne': return [1];      // Almuerzo
+                    case 'leche': return [0];      // Desayuno (separado de carne)
+                    case 'huevo': return [2];      // Cena (separado de carne)
+                    case 'bebida_veg': return [0]; // Desayuno
+                    case 'levadura': return [1];   // Almuerzo
+                    default: return [1];
+                }
+            }
+            if (vecesAlDia === 2) {
+                switch(foodId) {
+                    case 'carne': return [1, 2];      // Almuerzo, Cena
+                    case 'leche': return [0, 1];      // Desayuno, Almuerzo (para reducir coincidencia en Cena)
+                    case 'huevo': return [0, 2];      // Desayuno, Cena (para reducir coincidencia en Almuerzo)
+                    case 'bebida_veg': return [0, 1]; // Desayuno, Almuerzo
+                    case 'levadura': return [1, 2];   // Almuerzo, Cena
+                    default: return [0, 2];
+                }
+            }
+            if (vecesAlDia === 3) {
+                return [0, 1, 2]; // Desayuno, Almuerzo y Cena
+            }
+            return [];
+        };
+
+        // Función científica para calcular la absorción considerando transporte activo saturable (FI) y difusión pasiva (2%)
+        const calcularAbsorcionFisiologica = (ingerido) => {
+            if (ingerido <= 0) return 0;
+            
+            // Corrección Metodológica: A dosis farmacológicas altas (≥ 100 µg), la absorción 
+            // por difusión pasiva pura garantiza clínicamente cubrir la cuota metabólica de 4 µg diarios.
+            if (ingerido >= 100.0) {
+                return 4.0;
+            }
+
+            const activo = Math.min(ingerido, ABSORCION_MAXIMA_POR_COMIDA);
+            const pasivo = ingerido > ABSORCION_MAXIMA_POR_COMIDA ? (ingerido - ABSORCION_MAXIMA_POR_COMIDA) * 0.02 : 0;
+            return Math.round((activo + pasivo) * 100) / 100;
+        };
+
+        const ejecutarAlgoritmoNBEA = (alimentos, suplementacion) => {
+            // Inicializar matriz de la semana virtual (7 días x 3 comidas)
+            let semanaVirtual = Array(7).fill(null).map(() => 
+                Array(3).fill(null).map(() => ({
+                    alimentos: [],
+                    totalIngerido: 0,
+                    totalAbsorbido: 0,
+                    suplementoAgregado: null
+                }))
+            );
+
+            // 1. Distribuir alimentos primero aplicando desfases para optimizar asimilación
+            alimentos.forEach(alimento => {
+                const { id, diasPorSemana, vecesPorDia, porcionesPorComida, b12Porporcion, offsetDia } = alimento;
+                
+                if (diasPorSemana === 0 || vecesPorDia === 0 || porcionesPorComida === 0) return;
+
+                // Obtener distribución de días base y aplicar el offset específico del alimento
+                const baseDias = mapDiasDeterministas(diasPorSemana);
+                const diasAsignados = baseDias.map(dia => (dia + offsetDia) % 7);
+                
+                // Obtener distribución de comidas staggerizada
+                const comidasAsignadas = mapComidasPorVeces(vecesPorDia, id);
+
+                diasAsignados.forEach(diaIdx => {
+                    comidasAsignadas.forEach(comidaIdx => {
+                        const b12Ingerida = b12Porporcion * porcionesPorComida;
+                        semanaVirtual[diaIdx][comidaIdx].alimentos.push({
+                            id: id,
+                            nombreKey: alimento.nombreKey,
+                            porciones: porcionesPorComida,
+                            b12Ingerida: b12Ingerida
+                        });
+                        semanaVirtual[diaIdx][comidaIdx].totalIngerido += b12Ingerida;
+                    });
+                });
+            });
+
+            // 2. Distribuir suplementos de forma dinámica basándonos en la carga actual de alimentos
+            const esSuplementoSemanal = ['1000_3x', '1250_2x', '2500_1x'].includes(suplementacion);
+            const esSuplementoDiario = ['1.4_3x', '5_1x', '5_2x', '100_1x'].includes(suplementacion);
+
+            if (esSuplementoDiario) {
+                for (let d = 0; d < 7; d++) {
+                    if (suplementacion === '1.4_3x') {
+                        // 1.4 mcg 3 veces al día: se agrega a todas las comidas
+                        [0, 1, 2].forEach(c => {
+                            semanaVirtual[d][c].totalIngerido += 1.4;
+                            semanaVirtual[d][c].suplementoAgregado = { dosis: 1.4, etiqueta: '1.4 µg' };
+                        });
+                    } else if (suplementacion === '5_1x' || suplementacion === '100_1x') {
+                        const dosis = suplementacion === '5_1x' ? 5.0 : 100.0;
+                        
+                        // Buscar la comida con menor cantidad de B12 de alimentos
+                        const comidasOrdenadas = [0, 1, 2].map(c => ({
+                            index: c,
+                            b12Alimentos: semanaVirtual[d][c].totalIngerido
+                        })).sort((a, b) => a.b12Alimentos - b.b12Alimentos);
+
+                        const comidaDestino = comidasOrdenadas[0].index;
+                        semanaVirtual[d][comidaDestino].totalIngerido += dosis;
+                        semanaVirtual[d][comidaDestino].suplementoAgregado = { 
+                            dosis: dosis, 
+                            etiqueta: `${dosis} µg` 
+                        };
+                    } else if (suplementacion === '5_2x') {
+                        const dosis = 5.0;
+
+                        // Buscar las dos comidas con menor cantidad de B12 de alimentos
+                        const comidasOrdenadas = [0, 1, 2].map(c => ({
+                            index: c,
+                            b12Alimentos: semanaVirtual[d][c].totalIngerido
+                        })).sort((a, b) => a.b12Alimentos - b.b12Alimentos);
+
+                        [comidasOrdenadas[0].index, comidasOrdenadas[1].index].forEach(comidaDestino => {
+                            semanaVirtual[d][comidaDestino].totalIngerido += dosis;
+                            semanaVirtual[d][comidaDestino].suplementoAgregado = { 
+                                dosis: dosis, 
+                                etiqueta: '5 µg' 
+                            };
+                        });
+                    }
+                }
+            }
+
+            // 3. Aplicar el cálculo de absorción fisiológica por comida
+            let diasCumplidosCount = 0;
+            let diasNoCumplidosCount = 0;
+            const reporteDias = [];
+
+            semanaVirtual.forEach((dia, diaIdx) => {
+                let absorbidoDia = 0;
+                let ingeridoDia = 0;
+                
+                const comidasDetalle = dia.map((comida, comidaIdx) => {
+                    const absorbidoComida = calcularAbsorcionFisiologica(comida.totalIngerido);
+                    dia[comidaIdx].totalAbsorbido = absorbidoComida;
+                    absorbidoDia += absorbidoComida;
+                    ingeridoDia += comida.totalIngerido;
+                    
+                    return {
+                        nombreKey: `comida_${comidaIdx}`,
+                        alimentosConsumidos: comida.alimentos,
+                        suplemento: comida.suplementoAgregado,
+                        totalIngerido: comida.totalIngerido,
+                        totalAbsorbido: absorbidoComida
+                    };
+                });
+
+                // Si tiene suplementación semanal, asume adecuación excelente automática (reservas corporales cubiertas)
+                const cumpleMeta = esSuplementoSemanal ? true : (absorbidoDia >= META_ABSORCION_DIARIA);
+                
+                if (cumpleMeta) {
+                    diasCumplidosCount++;
+                } else {
+                    diasNoCumplidosCount++;
+                }
+
+                reporteDias.push({
+                    diaNombreKey: DIAS_SEMANA[diaIdx].nameKey,
+                    diaCortoKey: DIAS_SEMANA[diaIdx].shortKey,
+                    comidas: comidasDetalle,
+                    totalIngeridoDia: ingeridoDia,
+                    totalAbsorbidoDia: esSuplementoSemanal ? META_ABSORCION_DIARIA : Math.round(absorbidoDia * 100) / 100,
+                    cumpleMeta: cumpleMeta,
+                    origenMetabolico: esSuplementoSemanal ? 'Suplementación Semanal de Alta Dosis (Reservas cubiertas)' : 'Asimilación virtual normal'
+                });
+            });
+
+            const porcentajeCumplimiento = (diasCumplidosCount / 7) * 100;
+
+            return {
+                semanaVirtual,
+                reporteDias,
+                diasCumplidos: diasCumplidosCount,
+                diasNoCumplidos: diasNoCumplidosCount,
+                porcentajeCumplimiento: Math.round(porcentajeCumplimiento * 10) / 10,
+                promedioAbsorbidoSemanal: Math.round((reporteDias.reduce((acc, d) => acc + d.totalAbsorbidoDia, 0) / 7) * 100) / 100
+            };
+        };
+
+        function App() {
+            const [darkMode, setDarkMode] = useState(false);
+            const [lang, setLang] = useState('es'); // Idioma activo: es, en, fi, de, it, ko, ja
+            
+            // Estado para el Cuestionario de Frecuencia (FFQ)
+            const [alimentos, setAlimentos] = useState(
+                ALIMENTOS_INICIALES.map(al => ({
+                    ...al,
+                    diasPorSemana: 0, 
+                    vecesPorDia: 1, 
+                    porcionesPorComida: 1.0 
+                }))
+            );
+
+            // Perfil clínico (Dieta del participante)
+            const [perfil, setPerfil] = useState({
+                grupoEstudio: 'Vegano'
+            });
+
+            // Estado de suplementación con cianocobalamina
+            const [suplementacion, setSuplementacion] = useState('ninguna');
+
+            // Filtro dinámico de alimentos basados en el patrón dietético
+            const alimentosFiltrados = useMemo(() => {
+                return alimentos.filter(al => {
+                    if (perfil.grupoEstudio === 'Vegano') {
+                        return al.id !== 'carne' && al.id !== 'huevo' && al.id !== 'leche';
+                    }
+                    if (perfil.grupoEstudio === 'Ovolactovegetariano') {
+                        return al.id !== 'carne';
+                    }
+                    return true;
+                });
+            }, [alimentos, perfil.grupoEstudio]);
+
+            useEffect(() => {
+                if (darkMode) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }, [darkMode]);
+
+            // Gestión de actualizaciones en el cuestionario de consumo
+            const handleAlimentoChange = (id, campo, valor) => {
+                setAlimentos(prev => prev.map(al => {
+                    if (al.id === id) {
+                        return { ...al, [campo]: valor };
+                    }
+                    return al;
+                }));
+            };
+
+            // Manejador del cambio de dieta con reinicio de valores ocultos
+            const handleGrupoEstudioChange = (nuevoGrupo) => {
+                setPerfil(prev => ({ ...prev, grupoEstudio: nuevoGrupo }));
+                setAlimentos(prev => prev.map(al => {
+                    const esOcultoEnVegano = ['carne', 'huevo', 'leche'].includes(al.id);
+                    const esOcultoEnOvolacto = ['carne'].includes(al.id);
+                    
+                    if (nuevoGrupo === 'Vegano' && esOcultoEnVegano) {
+                        return { ...al, diasPorSemana: 0, vecesPorDia: 1, porcionesPorComida: 1.0 };
+                    }
+                    if (nuevoGrupo === 'Ovolactovegetariano' && esOcultoEnOvolacto) {
+                        return { ...al, diasPorSemana: 0, vecesPorDia: 1, porcionesPorComida: 1.0 };
+                    }
+                    return al;
+                }));
+            };
+
+            // Cálculo reactivo mediante useMemo usando los alimentos filtrados y el estado de suplementación
+            const resultados = useMemo(() => {
+                return ejecutarAlgoritmoNBEA(alimentosFiltrados, suplementacion);
+            }, [alimentosFiltrados, suplementacion]);
+
+            // Traducciones dinámicas rápidas
+            const t = (key) => {
+                return TRANSLATIONS[lang]?.[key] || TRANSLATIONS['es']?.[key] || key;
+            };
+
+            // Clasificación diagnóstica de adecuación
+            const clasificarRiesgo = (pct) => {
+                if (pct >= 80) return { 
+                    clasificacion: t('diag_excellent'), 
+                    color: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-500/20', 
+                    descripcion: t('diag_excellent_desc'), 
+                    severidad: t('diag_sev_low') 
+                };
+                if (pct >= 50) return { 
+                    clasificacion: t('diag_moderate'), 
+                    color: 'text-amber-500 bg-amber-50 dark:bg-amber-950/30 border-amber-500/20', 
+                    descripcion: t('diag_moderate_desc'), 
+                    severidad: t('diag_sev_mod') 
+                };
+                return { 
+                    clasificacion: t('diag_low'), 
+                    color: 'text-rose-500 bg-rose-50 dark:bg-rose-950/30 border-rose-500/20', 
+                    descripcion: t('diag_low_desc'), 
+                    severidad: t('diag_sev_high') 
+                };
+            };
+
+            const infoRiesgo = clasificarRiesgo(resultados.porcentajeCumplimiento);
+
+            const exportarExcel = () => {
+                let csvContent = "data:text/csv;charset=utf-8,";
+                csvContent += "NutriPredict-B12 - Resultados del Algoritmo NBEA v1.0\r\n";
+                csvContent += "Investigador Principal;Jean Carlos Ruiz Mosley\r\n";
+                csvContent += `Patron Dietetico;${perfil.grupoEstudio}\r\n`;
+                csvContent += `Suplementacion Seleccionada;${suplementacion}\r\n`;
+                csvContent += `Porcentaje de Cumplimiento Semanal;${resultados.porcentajeCumplimiento}%\r\n`;
+                csvContent += `Dias Adecuados (>=4 ug);${resultados.diasCumplidos}\r\n`;
+                csvContent += `Dias Inadecuados (<4 ug);${resultados.diasNoCumplidos}\r\n`;
+                csvContent += `Promedio Absorbido Estimado (ug/dia);${resultados.promedioAbsorbidoSemanal}\r\n\r\n`;
+                
+                csvContent += "Frecuencias Reportadas (FFQ):\r\n";
+                csvContent += "Alimento;Dias por Semana;Veces al Dia;Porciones por Comida;B12 por Porcion (ug)\r\n";
+                alimentosFiltrados.forEach(al => {
+                    csvContent += `${t(al.nombreKey)};${al.diasPorSemana};${al.vecesPorDia};${al.porcionesPorComida};${al.b12Porporcion}\r\n`;
+                });
+
+                csvContent += "\r\nDetalle Diario de la Semana Virtual (Distribucion Optimizada):\r\n";
+                csvContent += "Dia;Ingesta Desayuno (ug);Absorcion Desayuno (ug);Ingesta Almuerzo (ug);Absorcion Almuerzo (ug);Ingesta Cena (ug);Absorcion Cena (ug);Total Absorbido Dia (ug);Cumple Meta?\r\n";
+                resultados.reporteDias.forEach(d => {
+                    const des = d.comidas[0];
+                    const alm = d.comidas[1];
+                    const cen = d.comidas[2];
+                    csvContent += `${t(d.diaNombreKey)};${des.totalIngerido};${des.totalAbsorbido};${alm.totalIngerido};${alm.totalAbsorbido};${cen.totalIngerido};${cen.totalAbsorbido};${d.totalAbsorbidoDia};${d.cumpleMeta ? 'SI' : 'NO'}\r\n`;
+                });
+
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `NutriPredict_B12_${perfil.grupoEstudio}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+
+            const exportarPDF = () => {
+                window.print();
+            };
+
+            return (
+                <div class="min-h-screen flex flex-col">
+                    
+                    {/* --- ENCABEZADO --- */}
+                    <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm sticky top-0 z-50 no-print">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-600/20 text-white">
+                                    <i class="fa-solid fa-microscope text-lg"></i>
+                                </div>
+                                <div>
+                                    <h1 class="font-bold text-lg leading-tight text-slate-900 dark:text-white flex items-center gap-2">
+                                        NutriPredict-B12 
+                                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">NBEA v1.0</span>
+                                    </h1>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">{t('app_subtitle')}</p>
+                                </div>
+                            </div>
+                            
+                            {/* SELECTOR DE IDIOMAS Y BOTONES */}
+                            <div class="flex items-center gap-3 sm:gap-4">
+                                {/* Selector premium de Idiomas con Banderas Emojis */}
+                                <div class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg">
+                                    <button onClick={() => setLang('es')} class={`px-1.5 py-0.5 text-sm rounded transition-all ${lang === 'es' ? 'bg-white dark:bg-slate-900 shadow-sm scale-105' : 'opacity-60 hover:opacity-100'}`} title="Español">🇵🇦</button>
+                                    <button onClick={() => setLang('en')} class={`px-1.5 py-0.5 text-sm rounded transition-all ${lang === 'en' ? 'bg-white dark:bg-slate-900 shadow-sm scale-105' : 'opacity-60 hover:opacity-100'}`} title="English (UK)">🇬🇧</button>
+                                    <button onClick={() => setLang('fi')} class={`px-1.5 py-0.5 text-sm rounded transition-all ${lang === 'fi' ? 'bg-white dark:bg-slate-900 shadow-sm scale-105' : 'opacity-60 hover:opacity-100'}`} title="Suomi">🇫🇮</button>
+                                    <button onClick={() => setLang('de')} class={`px-1.5 py-0.5 text-sm rounded transition-all ${lang === 'de' ? 'bg-white dark:bg-slate-900 shadow-sm scale-105' : 'opacity-60 hover:opacity-100'}`} title="Deutsch">🇩🇪</button>
+                                    <button onClick={() => setLang('it')} class={`px-1.5 py-0.5 text-sm rounded transition-all ${lang === 'it' ? 'bg-white dark:bg-slate-900 shadow-sm scale-105' : 'opacity-60 hover:opacity-100'}`} title="Italiano">🇮🇹</button>
+                                    <button onClick={() => setLang('ko')} class={`px-1.5 py-0.5 text-sm rounded transition-all ${lang === 'ko' ? 'bg-white dark:bg-slate-900 shadow-sm scale-105' : 'opacity-60 hover:opacity-100'}`} title="한국어">🇰🇷</button>
+                                    <button onClick={() => setLang('ja')} class={`px-1.5 py-0.5 text-sm rounded transition-all ${lang === 'ja' ? 'bg-white dark:bg-slate-900 shadow-sm scale-105' : 'opacity-60 hover:opacity-100'}`} title="日本語">🇯🇵</button>
+                                </div>
+
+                                <button 
+                                    onClick={() => setDarkMode(!darkMode)}
+                                    class="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
+                                    title="Alternar Tema"
+                                >
+                                    <i class={`fa-solid ${darkMode ? 'fa-sun' : 'fa-moon'}`}></i>
+                                </button>
+                                <button 
+                                    onClick={exportarPDF}
+                                    class="hidden lg:flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/40 dark:text-brand-300 border border-brand-200 dark:border-brand-900"
+                                >
+                                    <i class="fa-solid fa-file-pdf"></i> {t('print_report')}
+                                </button>
+                                <button 
+                                    onClick={exportarExcel}
+                                    class="hidden lg:flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900"
+                                >
+                                    <i class="fa-solid fa-file-csv"></i> {t('export_csv')}
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* --- CONTENIDO PRINCIPAL --- */}
+                    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+                        
+                        {/* ADVERTENCIA DE METODOLOGÍA */}
+                        <div class="mb-8 p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900 rounded-2xl flex items-start gap-4">
+                            <div class="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg shrink-0">
+                                <i class="fa-solid fa-circle-info text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-blue-800 dark:text-blue-300 text-sm">{t('methodology_title')}</h4>
+                                <p class="text-xs text-blue-700/85 dark:text-blue-400 mt-1 leading-relaxed">
+                                    {t('methodology_desc')}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* GRID PRINCIPAL */}
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                            
+                            {/* COLUMNA IZQUIERDA: CONFIGURACIÓN E INPUTS */}
+                            <section class="lg:col-span-5 flex flex-col gap-8 no-print">
+                                
+                                {/* CARD: IDENTIFICACIÓN DEL PATRÓN DIETÉTICO */}
+                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                                    <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        <i class="fa-solid fa-utensils text-brand-600"></i> {t('dietary_pattern')}
+                                    </h3>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">{t('select_diet')}</label>
+                                        <select 
+                                            value={perfil.grupoEstudio}
+                                            onChange={(e) => handleGrupoEstudioChange(e.target.value)}
+                                            class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-semibold mb-4 text-slate-800 dark:text-slate-100"
+                                        >
+                                            <option value="Vegano">{t('diet_vegan')}</option>
+                                            <option value="Ovolactovegetariano">{t('diet_ovolacto')}</option>
+                                            <option value="Flexitariano">{t('diet_flexi')}</option>
+                                            <option value="Omnívoro">{t('diet_omni')}</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {/* CARD: SUPLEMENTACIÓN CON CIANOCOBALAMINA */}
+                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                                            <i class="fa-solid fa-pills text-brand-600"></i> {t('supp_title')}
+                                        </h3>
+                                        <span class="text-[10px] bg-brand-100 dark:bg-brand-950 px-2 py-0.5 rounded text-brand-700 dark:text-brand-300 font-bold">{t('supp_active')}</span>
+                                    </div>
+                                    <p class="text-xs text-slate-400 dark:text-slate-500 mb-4">
+                                        {t('supp_desc')}
+                                    </p>
+                                    
+                                    <div class="space-y-4">
+                                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">{t('supp_regimen')}</label>
+                                        <select 
+                                            value={suplementacion}
+                                            onChange={(e) => setSuplementacion(e.target.value)}
+                                            class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 font-semibold text-slate-800 dark:text-slate-100"
+                                        >
+                                            <option value="ninguna">{t('supp_none')}</option>
+                                            <optgroup label={t('supp_daily_group')}>
+                                                <option value="1.4_3x">{t('supp_14_3x')}</option>
+                                                <option value="5_1x">{t('supp_5_1x')}</option>
+                                                <option value="5_2x">{t('supp_5_2x')}</option>
+                                                <option value="100_1x">{t('supp_100_1x')}</option>
+                                            </optgroup>
+                                            <optgroup label={t('supp_weekly_group')}>
+                                                <option value="1000_3x">{t('supp_1000_3x')}</option>
+                                                <option value="1250_2x">{t('supp_1250_2x')}</option>
+                                                <option value="2500_1x">{t('supp_2500_1x')}</option>
+                                            </optgroup>
+                                        </select>
+
+                                        {/* Mensaje metodológico requerido */}
+                                        <div class="p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-150 dark:border-amber-900 rounded-xl text-amber-800 dark:text-amber-400 text-[11px] leading-relaxed">
+                                            <i class="fa-solid fa-triangle-exclamation mr-1 shrink-0"></i>
+                                            <strong>{t('clinical_note')}</strong> {t('clinical_note_desc')}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* CARD: CUESTIONARIO FFQ */}
+                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex-grow">
+                                    <div class="flex items-center justify-between mb-6">
+                                        <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                                            <i class="fa-solid fa-list-check text-brand-600"></i> {t('ffq_title')}
+                                        </h3>
+                                        <span class="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-slate-500 dark:text-slate-400 font-semibold">{t('ffq_subtitle')}</span>
+                                    </div>
+
+                                    <div class="space-y-6">
+                                        {alimentosFiltrados.map(al => {
+                                            return (
+                                                <div key={al.id} class="p-4 bg-slate-50 dark:bg-slate-950/40 rounded-xl border border-slate-100 dark:border-slate-900/60 hover:border-slate-200 dark:hover:border-slate-800 transition-all">
+                                                    
+                                                    {/* Header Alimento (Aporte fijo de microgramos) */}
+                                                    <div class="flex items-center justify-between mb-3">
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="w-7 h-7 rounded-lg bg-brand-100 dark:bg-brand-950/50 flex items-center justify-center text-brand-600 dark:text-brand-400">
+                                                                <i class={al.icono}></i>
+                                                            </div>
+                                                            <div>
+                                                                <h4 class="font-bold text-sm text-slate-800 dark:text-slate-200 leading-tight">{t(al.nombreKey)}</h4>
+                                                                <p class="text-[10px] text-slate-400 mt-0.5">{t('ffq_portion')} {t(al.porcionUnidadKey)}</p>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-850 px-2.5 py-1 rounded-lg text-xs font-bold text-brand-600 dark:text-brand-400" title="Contenido de B12 inalterable">
+                                                            {al.b12Porporcion} µg
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Selectores de consumo */}
+                                                    <div class={`grid gap-3 pt-2 border-t border-slate-200/40 dark:border-slate-900/40 ${al.permitePorciones ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                                                        <div>
+                                                            <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">{t('ffq_days_week')}</label>
+                                                            <select 
+                                                                value={al.diasPorSemana}
+                                                                onChange={(e) => handleAlimentoChange(al.id, 'diasPorSemana', parseInt(e.target.value))}
+                                                                class="w-full text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-1.5 font-semibold focus:outline-none focus:ring-1 focus:ring-brand-500 text-slate-800 dark:text-slate-100"
+                                                            >
+                                                                {[0, 1, 2, 3, 4, 5, 6, 7].map(d => (
+                                                                    <option key={d} value={d}>{d === 0 ? t('ffq_no_consume') : `${d} ${d === 1 ? t('ffq_day') : t('ffq_days')}`}</option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">{t('ffq_times_day')}</label>
+                                                            <select 
+                                                                value={al.vecesPorDia}
+                                                                onChange={(e) => handleAlimentoChange(al.id, 'vecesPorDia', parseInt(e.target.value))}
+                                                                class="w-full text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-1.5 font-semibold focus:outline-none focus:ring-1 focus:ring-brand-500 text-slate-800 dark:text-slate-100"
+                                                                disabled={al.diasPorSemana === 0}
+                                                            >
+                                                                <option value={1}>{`1 ${t('ffq_time')}`}</option>
+                                                                <option value={2}>{`2 ${t('ffq_times')}`}</option>
+                                                                <option value={3}>{`3 ${t('ffq_times')}`}</option>
+                                                            </select>
+                                                        </div>
+                                                        
+                                                        {/* Visualización condicional de la porción */}
+                                                        {al.permitePorciones && (
+                                                            <div>
+                                                                <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">{t('ffq_portions')}</label>
+                                                                <select 
+                                                                    value={al.porcionesPorComida}
+                                                                    onChange={(e) => handleAlimentoChange(al.id, 'porcionesPorComida', parseFloat(e.target.value))}
+                                                                    class="w-full text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-1.5 font-semibold focus:outline-none focus:ring-1 focus:ring-brand-500 text-slate-800 dark:text-slate-100"
+                                                                    disabled={al.diasPorSemana === 0}
+                                                                >
+                                                                    {Array.from({ length: al.maxPorciones }, (_, i) => i + 1).map(p => (
+                                                                        <option key={p} value={p}>{p} {p === 1 ? t('ffq_portion_unit') : t('ffq_portions_unit')}</option>
+                                                                    ))}
+                                                                </select>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </section>
+
+                            {/* COLUMNA DERECHA: RESULTADOS */}
+                            <section class="lg:col-span-7 flex flex-col gap-8">
+                                
+                                {/* DASHBOARD DE LOGROS / METRICAS */}
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                                    
+                                    {/* CARD 1: % CUMPLIMIENTO */}
+                                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between relative overflow-hidden">
+                                        <div class="absolute -right-6 -bottom-6 text-brand-100 dark:text-brand-900/10 text-8xl pointer-events-none font-bold">
+                                            %
+                                        </div>
+                                        <div>
+                                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('metrics_compliance')}</span>
+                                            <h2 class="text-4xl font-extrabold text-slate-800 dark:text-white mt-2">{resultados.porcentajeCumplimiento}%</h2>
+                                        </div>
+                                        <div class="mt-4">
+                                            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                                                <div 
+                                                    class="bg-brand-500 h-2 rounded-full transition-all duration-500" 
+                                                    style={{ width: `${resultados.porcentajeCumplimiento}%` }}
+                                                ></div>
+                                            </div>
+                                            <p class="text-[10px] text-slate-500 mt-1.5">{t('metrics_target')}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* CARD 2: RECUENTO DÍAS */}
+                                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+                                        <div>
+                                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('metrics_days_title')}</span>
+                                            <div class="flex items-baseline gap-1 mt-2">
+                                                <span class="text-4xl font-extrabold text-emerald-500">{resultados.diasCumplidos}</span>
+                                                <span class="text-sm font-semibold text-slate-400">{t('metrics_days_subtitle')}</span>
+                                            </div>
+                                        </div>
+                                        <div class="mt-4 flex gap-1.5">
+                                            {resultados.reporteDias.map((d, idx) => (
+                                                <div 
+                                                    key={idx} 
+                                                    title={`${t(d.diaNombreKey)}`}
+                                                    class={`flex-1 h-3 rounded-full ${d.cumpleMeta ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-slate-800'}`}
+                                                ></div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* CARD 3: ABSORCION PROMEDIO */}
+                                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+                                        <div>
+                                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('metrics_absorption_title')}</span>
+                                            <h2 class="text-4xl font-extrabold text-slate-800 dark:text-white mt-2">{resultados.promedioAbsorbidoSemanal} <span class="text-lg font-semibold">µg/d</span></h2>
+                                        </div>
+                                        <div class="mt-4">
+                                            <p class="text-[11px] text-slate-500 leading-relaxed">
+                                                {t('metrics_absorption_subtitle')}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                {/* CARD DIAGNÓSTICO NBEA v1.0 */}
+                                <div class={`border p-6 rounded-2xl ${infoRiesgo.color} transition-all duration-300`}>
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-white/40 dark:bg-black/20 flex items-center justify-center">
+                                            <i class="fa-solid fa-triangle-exclamation text-base"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-xs font-bold uppercase tracking-wider opacity-75">{t('diagnostic_title')}</span>
+                                            <h3 class="text-lg font-bold leading-none mt-1">{infoRiesgo.clasificacion}</h3>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs mt-3 leading-relaxed opacity-90">{infoRiesgo.descripcion}</p>
+                                    <div class="mt-4 pt-3 border-t border-current/10 flex justify-between text-xs font-bold">
+                                        <span>{t('diagnostic_severity')}</span>
+                                        <span class="underline uppercase tracking-wide">{infoRiesgo.severidad}</span>
+                                    </div>
+                                </div>
+
+                                {/* VISTA DE LA SEMANA VIRTUAL RECONSTRUIDA */}
+                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div>
+                                            <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                                                <i class="fa-solid fa-calendar-week text-brand-600"></i> {t('week_reconstructed_title')}
+                                            </h3>
+                                            <p class="text-[10px] text-slate-400 mt-1">{t('week_reconstructed_desc')}</p>
+                                        </div>
+                                        <span class="text-xs text-slate-400 shrink-0">{t('week_simulation_tag')}</span>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-1 gap-3">
+                                        {resultados.reporteDias.map((d, dIdx) => (
+                                            <div 
+                                                key={dIdx} 
+                                                class={`p-4 rounded-xl border ${d.cumpleMeta ? 'bg-white dark:bg-slate-900 border-emerald-500/30 font-medium' : 'bg-slate-50 dark:bg-slate-950/20 border-slate-200 dark:border-slate-850'} transition-all`}
+                                            >
+                                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                                                    <div class="flex items-center gap-2">
+                                                        <span class={`w-2.5 h-2.5 rounded-full ${d.cumpleMeta ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'}`}></span>
+                                                        <span class="font-bold text-sm text-slate-800 dark:text-slate-200">{t(d.diaNombreKey)}</span>
+                                                    </div>
+                                                    <div class="flex items-center gap-4 text-xs font-semibold">
+                                                        <span class="text-slate-500 dark:text-slate-400">{t('week_total_ingested')} <strong class="text-slate-700 dark:text-slate-300">{Math.round(d.totalIngeridoDia * 10) / 10} µg</strong></span>
+                                                        <span class="text-brand-600 dark:text-brand-400">{t('week_realized_abs')} <strong>{Math.round(d.totalAbsorbidoDia * 10) / 10} µg</strong></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                                    {d.comidas.map((c, cIdx) => (
+                                                        <div key={cIdx} class="p-2.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-800/80">
+                                                            <div class="flex justify-between items-center text-[10px] text-slate-400 font-bold uppercase mb-1.5 border-b border-slate-100 dark:border-slate-800/40 pb-1">
+                                                                <span>{t(c.nombreKey)}</span>
+                                                                <span class="text-brand-600 dark:text-brand-400">Abs: {c.totalAbsorbido}µg</span>
+                                                            </div>
+                                                            {c.alimentosConsumidos.length > 0 || c.suplemento ? (
+                                                                <ul class="space-y-1">
+                                                                    {c.suplemento && (
+                                                                        <li class="text-[10px] flex justify-between items-center bg-teal-50 dark:bg-teal-950/50 p-1 rounded border border-teal-500/20 text-teal-800 dark:text-teal-300 font-bold">
+                                                                            <span class="truncate pr-1"><i class="fa-solid fa-pills mr-1"></i>{t('suplemento_lbl')} ({c.suplemento.etiqueta})</span>
+                                                                            <span class="shrink-0">{c.suplemento.dosis}µg</span>
+                                                                        </li>
+                                                                    )}
+                                                                    {c.alimentosConsumidos.map((al, alIdx) => (
+                                                                        <li key={alIdx} class="text-[10px] flex justify-between items-center bg-slate-50 dark:bg-slate-950/50 p-1 rounded">
+                                                                            <span class="truncate pr-1 font-medium">{t(al.nombreKey)}</span>
+                                                                            <span class="font-bold shrink-0">{al.b12Ingerida}µg</span>
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            ) : (
+                                                                <p class="text-[10px] text-slate-300 dark:text-slate-700 italic py-1">{t('week_no_events')}</p>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* TABLA DE CÁLCULO PASO A PASO */}
+                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm overflow-hidden">
+                                    <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        <i class="fa-solid fa-calculator text-brand-600"></i> {t('audit_title')}
+                                    </h3>
+                                    
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-left border-collapse text-xs">
+                                            <thead>
+                                                <tr class="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 font-bold uppercase">
+                                                    <th class="p-3">{t('audit_day')}</th>
+                                                    <th class="p-3">{t('audit_breakfast')}</th>
+                                                    <th class="p-3">{t('audit_lunch')}</th>
+                                                    <th class="p-3">{t('audit_dinner')}</th>
+                                                    <th class="p-3">{t('audit_absorbed_day')}</th>
+                                                    <th class="p-3">{t('audit_meta_target')}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-slate-150 dark:divide-slate-850">
+                                                {resultados.reporteDias.map((d, idx) => (
+                                                    <tr key={idx} class="hover:bg-slate-50 dark:hover:bg-slate-950/40">
+                                                        <td class="p-3 font-bold">{t(d.diaNombreKey)}</td>
+                                                        <td class="p-3">
+                                                            <div class="flex flex-col">
+                                                                <span>Ing: {Math.round(d.comidas[0].totalIngerido * 10) / 10}µg</span>
+                                                                <span class="text-brand-600 dark:text-brand-400 font-semibold">Abs: {d.comidas[0].totalAbsorbido}µg</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="p-3">
+                                                            <div class="flex flex-col">
+                                                                <span>Ing: {Math.round(d.comidas[1].totalIngerido * 10) / 10}µg</span>
+                                                                <span class="text-brand-600 dark:text-brand-400 font-semibold">Abs: {d.comidas[1].totalAbsorbido}µg</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="p-3">
+                                                            <div class="flex flex-col">
+                                                                <span>Ing: {Math.round(d.comidas[2].totalIngerido * 10) / 10}µg</span>
+                                                                <span class="text-brand-600 dark:text-brand-400 font-semibold">Abs: {d.comidas[2].totalAbsorbido}µg</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="p-3 font-bold text-slate-800 dark:text-slate-100">
+                                                            {Math.round(d.totalAbsorbidoDia * 10) / 10} µg
+                                                        </td>
+                                                        <td class="p-3">
+                                                            {d.cumpleMeta ? (
+                                                                <span class="px-2 py-1 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 font-bold rounded">{t('audit_met')}</span>
+                                                            ) : (
+                                                                <span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded">{t('audit_not_met')}</span>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                {/* DOCUMENTACIÓN CIENTÍFICA DEL ALGORITMO NBEA */}
+                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+                                    <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                                        <i class="fa-solid fa-graduation-cap text-brand-600"></i> {t('scientific_title')}
+                                    </h3>
+                                    
+                                    <div class="text-xs text-slate-600 dark:text-slate-300 space-y-3 leading-relaxed text-justify">
+                                        <p>{t('scientific_p1')}</p>
+                                        <h4 class="font-bold text-slate-800 dark:text-slate-200 mt-2">{t('scientific_subtitle_1')}</h4>
+                                        <p>{t('scientific_p2')}</p>
+                                        <h4 class="font-bold text-slate-800 dark:text-slate-200 mt-1">{t('scientific_subtitle_2')}</h4>
+                                        <p>{t('scientific_p3')}</p>
+                                        <div class="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl text-center font-mono text-xs text-slate-800 dark:text-slate-200 border border-slate-150 dark:border-slate-850 leading-relaxed">
+                                            B12_absorbida_comida = min(B12_ingerida_comida, 2.0 µg) + (B12_ingerida_comida &gt; 2.0 ? (B12_ingerida_comida - 2.0) * 0.02 : 0)
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </section>
+
+                        </div>
+
+                        {/* SECCIÓN EXCLUSIVA PARA IMPRESIÓN REPORT / PDF */}
+                        <div class="hidden print-only mt-12 p-8 border border-slate-300 rounded-3xl bg-white text-slate-900 space-y-6">
+                            <div class="text-center pb-6 border-b border-slate-200">
+                                <h1 class="text-2xl font-extrabold text-slate-900">NutriPredict-B12</h1>
+                                <p class="text-sm text-slate-500">{t('app_subtitle')}</p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 text-sm">
+                                <div><strong>{t('pdf_author_tag')}</strong> MEd Jean Carlos Ruiz Mosley</div>
+                                <div><strong>{t('pdf_evaluated_pattern')}</strong> {t(`diet_${perfil.grupoEstudio.toLowerCase()}`)}</div>
+                                <div><strong>{t('pdf_supp_tag')}</strong> {suplementacion === 'ninguna' ? t('supp_none') : suplementacion}</div>
+                                <div><strong>{t('pdf_date_tag')}</strong> {new Date().toLocaleDateString('es-ES')}</div>
+                                <div><strong>{t('pdf_evaluator_tag')}</strong></div>
+                            </div>
+                            <div class="pt-4 border-t border-slate-200 space-y-3">
+                                <h2 class="text-lg font-bold">{t('pdf_results_summary')}</h2>
+                                <ul class="space-y-1 text-sm">
+                                    <li>• {t('pdf_bullet_1').replace('{val}', resultados.promedioAbsorbidoSemanal)}</li>
+                                    <li>• {t('pdf_bullet_2').replace('{val1}', resultados.diasCumplidos).replace('{val2}', resultados.porcentajeCumplimiento)}</li>
+                                    <li>• {t('pdf_bullet_3').replace('{val1}', infoRiesgo.clasificacion).replace('{val2}', infoRiesgo.severidad)}</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </main>
+
+                    {/* --- PIE DE PÁGINA --- */}
+                    <footer class="bg-slate-100 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-900 py-8 text-xs text-slate-500 dark:text-slate-400 no-print">
+                        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-start justify-between gap-8">
+                            
+                            <div class="text-left md:max-w-[48%] space-y-1">
+                                <p class="font-bold text-slate-900 dark:text-slate-200 uppercase tracking-wider text-[10px]">{t('footer_author')}</p>
+                                <p class="font-bold text-brand-600 dark:text-brand-400 text-sm">MEd Jean Carlos Ruiz Mosley</p>
+                                <p class="text-slate-600 dark:text-slate-300 leading-relaxed">{t('footer_specialist')}</p>
+                                <p class="text-[10px] text-slate-400 dark:text-slate-500 pt-2 border-t border-slate-200/50 dark:border-slate-800/50 mt-2">
+                                    {t('footer_license_panama')}
+                                </p>
+                            </div>
+                            
+                            <div class="text-left md:text-right md:max-w-[48%] space-y-1">
+                                <p class="font-bold text-slate-900 dark:text-slate-200 uppercase tracking-wider text-[10px]">{t('footer_thanks')}</p>
+                                <p class="font-bold text-slate-700 dark:text-slate-300 text-sm">MSc Eyleen Montero</p>
+                                <p class="text-slate-600 dark:text-slate-300 leading-relaxed">{t('footer_thanks_specialist')}</p>
+                                <p class="text-[10px] text-slate-400 dark:text-slate-500 pt-2 border-t border-slate-200/50 dark:border-slate-800/50 mt-2">
+                                    {t('footer_simulation_tag')}
+                                </p>
+                            </div>
+                        </div>
+                    </footer>
+
+                </div>
+            );
+        }
+
+        // Renderizar la app React en el DOM
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
