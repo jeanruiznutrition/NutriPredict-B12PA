@@ -320,9 +320,46 @@ const { useState, useEffect, useMemo } = React;
                                                             </div>
                                                         </div>
                                                         
-                                                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-850 px-2.5 py-1 rounded-lg text-xs font-bold text-brand-600 dark:text-brand-400" title="Contenido de B12 inalterable">
-                                                            {al.b12Porporcion} µg
-                                                        </div>
+                                                        {al.editableB12 ? (
+                                                            <div class="flex items-center gap-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-850 rounded-lg pl-2 pr-1.5 py-1">
+                                                                <input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    step="0.1"
+                                                                    value={al.b12Porporcion}
+                                                                    onChange={(e) => {
+                                                                        const raw = e.target.value;
+                                                                        const v = parseFloat(raw);
+                                                                        handleAlimentoChange(al.id, 'b12Porporcion', raw === '' || isNaN(v) ? 0 : Math.max(0, Math.round(v * 10) / 10));
+                                                                    }}
+                                                                    class="w-10 text-xs font-bold text-brand-600 dark:text-brand-400 bg-transparent focus:outline-none text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                                    title="Editar contenido de B12 según la etiqueta de tu producto"
+                                                                />
+                                                                <span class="text-xs font-bold text-brand-600 dark:text-brand-400">µg</span>
+                                                                <div class="flex flex-col -space-y-1 ml-0.5">
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleAlimentoChange(al.id, 'b12Porporcion', Math.round((al.b12Porporcion + 0.2) * 10) / 10)}
+                                                                        class="text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 leading-none px-0.5"
+                                                                        title="Aumentar 0.2 µg"
+                                                                    >
+                                                                        <i class="fa-solid fa-caret-up text-xs"></i>
+                                                                    </button>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleAlimentoChange(al.id, 'b12Porporcion', Math.max(0, Math.round((al.b12Porporcion - 0.2) * 10) / 10))}
+                                                                        class="text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 leading-none px-0.5"
+                                                                        title="Disminuir 0.2 µg"
+                                                                    >
+                                                                        <i class="fa-solid fa-caret-down text-xs"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-850 px-2.5 py-1 rounded-lg text-xs font-bold text-brand-600 dark:text-brand-400" title="Contenido de B12 inalterable">
+                                                                {al.b12Porporcion} µg
+                                                            </div>
+                                                        )}
                                                     </div>
 
                                                     {/* Selectores de consumo */}

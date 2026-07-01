@@ -47,7 +47,8 @@
                 icono: 'fa-solid fa-seedling',
                 permitePorciones: true,
                 maxPorciones: 2,
-                offsetDia: 1
+                offsetDia: 1,
+                editableB12: true // El contenido de B12 varía según la marca/fabricante
             },
             { 
                 id: 'levadura', 
@@ -56,7 +57,8 @@
                 porcionUnidadKey: 'unit_yeast', 
                 icono: 'fa-solid fa-spoon',
                 permitePorciones: false,
-                offsetDia: 3
+                offsetDia: 3,
+                editableB12: true // El contenido de B12 varía según la marca/fabricante
             }
         ];
 
