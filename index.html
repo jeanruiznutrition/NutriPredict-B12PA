@@ -123,7 +123,7 @@
                 print_report: 'Imprimir Reporte',
                 export_csv: 'Exportar CSV',
                 methodology_title: 'Aviso de Rigor Metodológico',
-                methodology_desc: 'Esta herramienta es de uso de investigación. El modelo de simulación determinista NutriPredict-B12 Estimation Algorithm (NBEA v1.0) asume una semana estandarizada basada en frecuencias declaradas para evaluar la capacidad de asimilación bajo restricciones fisiológicas (techo inmutable de 2.0 µg por comida y meta de 4.0 µg diarios). No sustituye una evaluación clínica de biomarcadores sanguíneos. El motor de reparto implementa lógica de separación cruzada inteligente de alimentos para prevenir interacciones negativas en platos compartidos (evitando carne-lácteos, carne-huevo y huevo-carne).',
+                methodology_desc: 'Esta herramienta es de uso de investigación. El modelo de simulación determinista B12 Risk Estimation Algorithm (BREA v1.0) asume una semana estandarizada basada en frecuencias declaradas para evaluar la capacidad de asimilación bajo restricciones fisiológicas (techo inmutable de 2.0 µg por comida y meta de 4.0 µg diarios). No sustituye una evaluación clínica de biomarcadores sanguíneos. El motor de reparto implementa lógica de separación cruzada inteligente de alimentos para prevenir interacciones negativas en platos compartidos (evitando carne-lácteos, carne-huevo y huevo-carne).',
                 dietary_pattern: 'Patrón Alimentario',
                 select_diet: 'Seleccione la dieta del participante',
                 diet_vegan: 'Vegano',
@@ -165,7 +165,7 @@
                 metrics_days_subtitle: '/ 7 cumplidos',
                 metrics_absorption_title: 'Absorción Estimada',
                 metrics_absorption_subtitle: 'Consumo modelado con el límite fisiológico saturable de 2.0 µg por comida y difusión pasiva.',
-                diagnostic_title: 'Diagnóstico NBEA v1.0',
+                diagnostic_title: 'Diagnóstico BREA v1.0',
                 diagnostic_severity: 'Gravedad de Riesgo Evaluada:',
                 diag_excellent: 'Excelente Adecuación',
                 diag_excellent_desc: 'El participante alcanza la recomendación fisiológica de vitamina B12 de manera regular y distribuida la mayor parte de la semana.',
@@ -191,17 +191,17 @@
                 audit_meta_target: 'Meta (≥4.0µg)',
                 audit_met: 'CUMPLIDO',
                 audit_not_met: 'INSUPERADO',
-                scientific_title: 'Metodología y Algoritmo NBEA v1.0',
-                scientific_p1: 'El NutriPredict-B12 Estimation Algorithm (NBEA v1.0) es un modelo determinista y matemático diseñado para simular el comportamiento de absorción de vitamina B12 en el tracto intestinal.',
+                scientific_title: 'Metodología y Algoritmo BREA v1.0',
+                scientific_p1: 'El B12 Risk Estimation Algorithm (BREA v1.0) es un modelo determinista y matemático diseñado para simular el comportamiento de absorción de vitamina B12 en el tracto intestinal.',
                 scientific_subtitle_1: 'Distribución Anticolisión Cruzada (Cross-Staggering)',
-                scientific_p2: 'En la práctica dietética habitual, ingerir múltiples fuentes concentradas de vitamina B12 en una única comida satura rápidamente los receptores de Factor Intrínseco, resultando en un desperdicio biológico del excedente. Para resolver esto y reflejar un escenario de consumo optimizado, el NBEA v1.0 asigna desfases dinámicos en los días y comidas para cada alimento. Así se previene de manera absoluta la coincidencia de Carne con Lácteos (leche), y Huevo con Carne en el mismo plato, maximizando la absorción neta.',
+                scientific_p2: 'En la práctica dietética habitual, ingerir múltiples fuentes concentradas de vitamina B12 en una única comida satura rápidamente los receptores de Factor Intrínseco, resultando en un desperdicio biológico del excedente. Para resolver esto y reflejar un escenario de consumo optimizado, el BREA v1.0 asigna desfases dinámicos en los días y comidas para cada alimento. Así se previene de manera absoluta la coincidencia de Carne con Lácteos (leche), y Huevo con Carne en el mismo plato, maximizando la absorción neta.',
                 scientific_subtitle_2: 'Sinergia Dietética y Farmacológica Inteligente',
                 scientific_p3: 'El motor de asignación dinámico evalúa la carga de B12 de los alimentos en cada una de las 3 comidas virtuales diarias. Los suplementos diarios indicados se asignan prioritariamente a comidas libres. Si todas las comidas del día están ocupadas, el algoritmo localiza la comida que menor cantidad de B12 tiene, distribuyendo allí la cianocobalamina. Así se esquiva el límite de saturación de 2.0 µg y se valida la co-absorción libre de colisiones clínicas.',
                 pdf_author_tag: 'Autor del Software:',
                 pdf_evaluated_pattern: 'Patrón Dietético Evaluado:',
                 pdf_supp_tag: 'Suplementación Cianocobalamina:',
                 pdf_date_tag: 'Fecha de Generación:',
-                pdf_evaluator_tag: 'Algoritmo Evaluador: NBEA v1.0 determinista con desfase óptimo de absorción',
+                pdf_evaluator_tag: 'Algoritmo Evaluador: BREA v1.0 determinista con desfase óptimo de absorción',
                 pdf_results_summary: 'Resumen de Métricas Clínicas Estimadas',
                 pdf_bullet_1: 'Ingesta diaria absorbida modelada: {val} µg promedio diarios.',
                 pdf_bullet_2: 'Días que cumplen la meta saludable diaria (≥4.0 µg): {val1} de 7 días ({val2}%).',
@@ -210,7 +210,7 @@
                 footer_specialist: 'Nutricionista Dietista Especialista en Nutrición Basada en Plantas',
                 footer_thanks: 'Agradecimientos:',
                 footer_thanks_specialist: 'Nutricionista Dietista Especialista en Nutrición Vegetariana',
-                footer_simulation_tag: 'Simulador virtual de coincidencia y adecuación metabólica NBEA v1.0',
+                footer_simulation_tag: 'Simulador virtual de coincidencia y adecuación metabólica BREA v1.0',
                 footer_license_panama: '🇵🇦 Creado en Panamá, 2026 | © Jean Carlos Ruiz Mosley. Todos los derechos reservados. Prohibida su reproducción total o parcial sin autorización.',
                 food_meat: 'Carne',
                 food_egg: 'Huevo',
@@ -232,7 +232,7 @@
                 print_report: 'Print Report',
                 export_csv: 'Export CSV',
                 methodology_title: 'Methodological Rigour Notice',
-                methodology_desc: 'This tool is for research purposes only. The deterministic simulation model NutriPredict-B12 Estimation Algorithm (NBEA v1.0) assumes a standardised week based on reported frequencies to evaluate assimilation capacity under physiological restrictions (immutable ceiling of 2.0 µg per meal and daily target of 4.0 µg). It does not replace a clinical assessment of blood biomarkers. The allocation engine implements smart food cross-separation logic to prevent negative interactions in shared meals (avoiding meat-dairy, meat-egg, and egg-dairy).',
+                methodology_desc: 'This tool is for research purposes only. The deterministic simulation model B12 Risk Estimation Algorithm (BREA v1.0) assumes a standardised week based on reported frequencies to evaluate assimilation capacity under physiological restrictions (immutable ceiling of 2.0 µg per meal and daily target of 4.0 µg). It does not replace a clinical assessment of blood biomarkers. The allocation engine implements smart food cross-separation logic to prevent negative interactions in shared meals (avoiding meat-dairy, meat-egg, and egg-dairy).',
                 dietary_pattern: 'Dietary Pattern',
                 select_diet: 'Select participant diet',
                 diet_vegan: 'Vegan',
@@ -274,7 +274,7 @@
                 metrics_days_subtitle: '/ 7 met',
                 metrics_absorption_title: 'Estimated Absorption',
                 metrics_absorption_subtitle: 'Consumption modelled with the saturable physiological limit of 2.0 µg per meal and passive diffusion.',
-                diagnostic_title: 'NBEA v1.0 Diagnosis',
+                diagnostic_title: 'BREA v1.0 Diagnosis',
                 diagnostic_severity: 'Assessed Risk Severity:',
                 diag_excellent: 'Excellent Adequacy',
                 diag_excellent_desc: 'The participant regularly achieves the physiological recommendation of vitamin B12, distributed across most of the week.',
@@ -300,17 +300,17 @@
                 audit_meta_target: 'Target (≥4.0µg)',
                 audit_met: 'MET',
                 audit_not_met: 'UNMET',
-                scientific_title: 'Methodology and NBEA v1.0 Algorithm',
-                scientific_p1: 'The NutriPredict-B12 Estimation Algorithm (NBEA v1.0) is a mathematical and deterministic model designed to simulate vitamin B12 absorption behaviour in the human intestinal tract.',
+                scientific_title: 'Methodology and BREA v1.0 Algorithm',
+                scientific_p1: 'The B12 Risk Estimation Algorithm (BREA v1.0) is a mathematical and deterministic model designed to simulate vitamin B12 absorption behaviour in the human intestinal tract.',
                 scientific_subtitle_1: 'Cross-Staggering Distribution',
-                scientific_p2: 'In standard dietary practice, ingesting multiple concentrated sources of vitamin B12 in a single meal rapidly saturates the Intrinsic Factor receptors, resulting in biological waste of the surplus. To resolve this and reflect an optimised consumption scenario, NBEA v1.0 assigns dynamic offsets in days and meals for each food. This completely prevents the coincidence of Meat with Dairy (milk) and Egg with Meat in the same meal, maximising net absorption.',
+                scientific_p2: 'In standard dietary practice, ingesting multiple concentrated sources of vitamin B12 in a single meal rapidly saturates the Intrinsic Factor receptors, resulting in biological waste of the surplus. To resolve this and reflect an optimised consumption scenario, BREA v1.0 assigns dynamic offsets in days and meals for each food. This completely prevents the coincidence of Meat with Dairy (milk) and Egg with Meat in the same meal, maximising net absorption.',
                 scientific_subtitle_2: 'Smart Dietary and Pharmacological Synergy',
                 scientific_p3: 'The dynamic allocation engine evaluates the B12 load of foods in each of the 3 daily virtual meals. Indicated daily supplements are prioritised to empty meals. If all meals of the day are occupied, the algorithm locates the meal with the lowest amount of B12, distributing the cyanocobalamina there. This bypasses the saturation limit of 2.0 µg and validates co-absorption free of clinical collisions.',
                 pdf_author_tag: 'Software Author:',
                 pdf_evaluated_pattern: 'Evaluated Dietary Pattern:',
                 pdf_supp_tag: 'Cyanocobalamin Supplementation:',
                 pdf_date_tag: 'Generation Date:',
-                pdf_evaluator_tag: 'Evaluator Algorithm: Deterministic NBEA v1.0 with optimal absorption stagger',
+                pdf_evaluator_tag: 'Evaluator Algorithm: Deterministic BREA v1.0 with optimal absorption stagger',
                 pdf_results_summary: 'Summary of Estimated Clinical Metrics',
                 pdf_bullet_1: 'Modelled daily absorbed intake: {val} µg daily average.',
                 pdf_bullet_2: 'Days meeting the healthy daily target (≥4.0 µg): {val1} of 7 days ({val2}%).',
@@ -319,7 +319,7 @@
                 footer_specialist: 'Dietitian-Nutritionist, Specialist in Plant-Based Nutrition',
                 footer_thanks: 'Acknowledgements:',
                 footer_thanks_specialist: 'Dietitian-Nutritionist, Specialist in Vegetarian Nutrition',
-                footer_simulation_tag: 'Virtual simulation of metabolic coincidence and adequacy NBEA v1.0',
+                footer_simulation_tag: 'Virtual simulation of metabolic coincidence and adequacy BREA v1.0',
                 footer_license_panama: '🇵🇦 Created in Panama, 2026 | © Jean Carlos Ruiz Mosley. All Rights Reserved. Reproduction, in whole or in part, is prohibited without authorisation.',
                 food_meat: 'Meat',
                 food_egg: 'Egg',
@@ -341,7 +341,7 @@
                 print_report: 'Tulosta raportti',
                 export_csv: 'Vie CSV',
                 methodology_title: 'Metodologinen huomautus',
-                methodology_desc: 'Tämä työkalu on tarkoitettu vain tutkimuskäyttöön. Deterministinen simulaatiomalli NutriPredict-B12 Estimation Algorithm (NBEA v1.0) olettaa ilmoitettujen tiheyksien perusteella standardoidun viikon, jolla arvioidaan assimilaatiokapasiteettia fysiologisten rajoitusten alaisena (muuttumaton katto 2.0 µg ateriaa kohti ja päivätavoite 4.0 µg). Se ei korvaa verikoetutkimuksia. Kohdennusmoottori toteuttaa älykkään ruokien ristiinerottelulogiikan ehkäistäkseen haitallisia yhteisvaikutuksia jaetuilla aterioilla (välttäen liha-maitotuotteita, liha-kananmunaa ja kananmuna-maitotuotteita).',
+                methodology_desc: 'Tämä työkalu on tarkoitettu vain tutkimuskäyttöön. Deterministinen simulaatiomalli B12 Risk Estimation Algorithm (BREA v1.0) olettaa ilmoitettujen tiheyksien perusteella standardoidun viikon, jolla arvioidaan assimilaatiokapasiteettia fysiologisten rajoitusten alaisena (muuttumaton katto 2.0 µg ateriaa kohti ja päivätavoite 4.0 µg). Se ei korvaa verikoetutkimuksia. Kohdennusmoottori toteuttaa älykkään ruokien ristiinerottelulogiikan ehkäistäkseen haitallisia yhteisvaikutuksia jaetuilla aterioilla (välttäen liha-maitotuotteita, liha-kananmunaa ja kananmuna-maitotuotteita).',
                 dietary_pattern: 'Ruokavaliomalli',
                 select_diet: 'Valitse osallistujan ruokavalio',
                 diet_vegan: 'Vegaani',
@@ -383,7 +383,7 @@
                 metrics_days_subtitle: '/ 7 saavutettu',
                 metrics_absorption_title: 'Arvioitu imeytyminen',
                 metrics_absorption_subtitle: 'Kulutus mallinnettu aterioiden fysiologisella imeytymiskatolla (2.0 µg) ja passiivisella diffuusiolla.',
-                diagnostic_title: 'NBEA v1.0 -diagnoosi',
+                diagnostic_title: 'BREA v1.0 -diagnoosi',
                 diagnostic_severity: 'Arvioitu riskitaso:',
                 diag_excellent: 'Erinomainen riittävyys',
                 diag_excellent_desc: 'Osallistuja saavuttaa säännöllisesti B12-vitamiinin fysiologisen suosituksen, joka jakautuu tasaisesti suurimmalle osalle viikkoa.',
@@ -409,17 +409,17 @@
                 audit_meta_target: 'Tavoite (≥4.0µg)',
                 audit_met: 'TOTEUTUI',
                 audit_not_met: 'EI SAAVUTETTU',
-                scientific_title: 'Metodologia ja NBEA v1.0 -algoritmi',
-                scientific_p1: 'NutriPredict-B12 Estimation Algorithm (NBEA v1.0) on matemaattinen ja deterministinen malli, joka on suunniteltu simuloimaan B12-vitamiinin imeytymiskäyttäytymistä ihmisen suolistossa.',
+                scientific_title: 'Metodologia ja BREA v1.0 -algoritmi',
+                scientific_p1: 'B12 Risk Estimation Algorithm (BREA v1.0) on matemaattinen ja deterministinen malli, joka on suunniteltu simuloimaan B12-vitamiinin imeytymiskäyttäytymistä ihmisen suolistossa.',
                 scientific_subtitle_1: 'Ristiinporrastettu jakelu (Cross-Staggering)',
-                scientific_p2: 'Tavallisessa ruokavaliossa useiden keskittyneiden B12-vitamiinin lähteiden nauttiminen yhdellä aterialla tyydyttää nopeasti sisäisen tekijän (Intrinsic Factor) reseptorit, mikä johtaa ylimäärän biologiseen hukkaan. Tämän ratkaisemiseksi ja optimoidun kulutusskenaarion kuvaamiseksi NBEA v1.0 määrittää kullekin ruoalle dynaamiset viiveet päiville ja aterioille. Tämä estää kokonaan lihan ja maitotuotteiden tai kananmunan ja lihan osumisen samalle aterialle, mikä maksimoi nettoimeytymisen.',
+                scientific_p2: 'Tavallisessa ruokavaliossa useiden keskittyneiden B12-vitamiinin lähteiden nauttiminen yhdellä aterialla tyydyttää nopeasti sisäisen tekijän (Intrinsic Factor) reseptorit, mikä johtaa ylimäärän biologiseen hukkaan. Tämän ratkaisemiseksi ja optimoidun kulutusskenaarion kuvaamiseksi BREA v1.0 määrittää kullekin ruoalle dynaamiset viiveet päiville ja aterioille. Tämä estää kokonaan lihan ja maitotuotteiden tai kananmunan ja lihan osumisen samalle aterialle, mikä maksimoi nettoimeytymisen.',
                 scientific_subtitle_2: 'Älykäs ruokavalion ja farmakologian synergia',
                 scientific_p3: 'Dynaaminen kohdennusmoottori arvioi ruokien B12-kuormituksen jokaisella kolmella päivittäisellä virtuaaliaterialla. Päivittäiset lisäravinteet kohdennetaan ensisijaisesti tyhjille aterioille. Jos kaikki päivän ateriat ovat varattuja, algoritmi etsii aterian, jolla on vähiten B12-vitamiinia, ja sijoittaa syanokobalamiinin sinne. Tämä ohittaa 2.0 µg:n saturaatiorajan ja vahvistaa kliinisesti vapaan yhteisimeytymisen.',
                 pdf_author_tag: 'Ohjelmiston tekijä:',
                 pdf_evaluated_pattern: 'Arvioitu ruokavaliomalli:',
                 pdf_supp_tag: 'Syanokobalamiinilisäys:',
                 pdf_date_tag: 'Luontipäivämäärä:',
-                pdf_evaluator_tag: 'Arviointialgoritmi: Deterministinen NBEA v1.0 optimaalisella imeytymisen porrastuksella',
+                pdf_evaluator_tag: 'Arviointialgoritmi: Deterministinen BREA v1.0 optimaalisella imeytymisen porrastuksella',
                 pdf_results_summary: 'Arvioitujen kliinisten mittareiden yhteenveto',
                 pdf_bullet_1: 'Mallinnettu päivittäinen imeytynyt saanti: {val} µg päivittäinen keskiarvo.',
                 pdf_bullet_2: 'Päivät, jotka täyttävät terveellisen päivätavoitteen (≥4.0 µg): {val1} / 7 päivää ({val2}%).',
@@ -428,7 +428,7 @@
                 footer_specialist: 'Laillistettu ravitsemusterapeutti, kasvipohjaisen ravitsemuksen asiantuntija',
                 footer_thanks: 'Kiitokset:',
                 footer_thanks_specialist: 'Laillistettu ravitsemusterapeutti, kasvisruokavalion asiantuntija',
-                footer_simulation_tag: 'Metabolisen yhteensopivuuden ja riittävyyden virtuaalinen simulaattori NBEA v1.0',
+                footer_simulation_tag: 'Metabolisen yhteensopivuuden ja riittävyyden virtuaalinen simulaattori BREA v1.0',
                 footer_license_panama: '🇵🇦 Luotu Panamassa, 2026 | © Jean Carlos Ruiz Mosley. Kaikki oikeudet pidätetään. Kopiointi tai jakaminen ilman lupaa on kielletty.',
                 food_meat: 'Liha',
                 food_egg: 'Kananmuna',
@@ -450,7 +450,7 @@
                 print_report: 'Bericht drucken',
                 export_csv: 'CSV exportieren',
                 methodology_title: 'Hinweis zur methodischen Strenge',
-                methodology_desc: 'Dieses Tool dient ausschließlich Forschungszwecken. Das deterministische Simulationsmodell NutriPredict-B12 Estimation Algorithm (NBEA v1.0) nimmt eine standardisierte Woche basierend auf den gemeldeten Häufigkeiten an, um die Assimilationskapazität unter physiologischen Einschränkungen (unveränderliche Obergrenze von 2.0 µg pro Mahlzeit und Tagesziel von 4.0 µg) zu bewerten. Es ersetzt keine klinische Beurteilung von Blutbiomarkern. Das Verteilungssystem implementiert eine intelligente Kreuztrennung von Lebensmitteln, um negative Wechselwirkungen bei gemeinsamen Mahlzeiten zu verhindern (Vermeidung von Fleisch-Milchprodukten, Fleisch-Ei und Ei-Milchprodukten).',
+                methodology_desc: 'Dieses Tool dient ausschließlich Forschungszwecken. Das deterministische Simulationsmodell B12 Risk Estimation Algorithm (BREA v1.0) nimmt eine standardisierte Woche basierend auf den gemeldeten Häufigkeiten an, um die Assimilationskapazität unter physiologischen Einschränkungen (unveränderliche Obergrenze von 2.0 µg pro Mahlzeit und Tagesziel von 4.0 µg) zu bewerten. Es ersetzt keine klinische Beurteilung von Blutbiomarkern. Das Verteilungssystem implementiert eine intelligente Kreuztrennung von Lebensmitteln, um negative Wechselwirkungen bei gemeinsamen Mahlzeiten zu verhindern (Vermeidung von Fleisch-Milchprodukten, Fleisch-Ei und Ei-Milchprodukten).',
                 dietary_pattern: 'Ernährungsmuster',
                 select_diet: 'Wählen Sie die Diät des Teilnehmers',
                 diet_vegan: 'Vegan',
@@ -492,7 +492,7 @@
                 metrics_days_subtitle: '/ 7 erfüllt',
                 metrics_absorption_title: 'Geschätzte Absorption',
                 metrics_absorption_subtitle: 'Konsum modelliert mit dem sättigbaren physiologischen Limit von 2.0 µg pro Mahlzeit und passiver Diffusion.',
-                diagnostic_title: 'NBEA v1.0 Diagnose',
+                diagnostic_title: 'BREA v1.0 Diagnose',
                 diagnostic_severity: 'Bewerteter Risikograd:',
                 diag_excellent: 'Hervorragende Adäquanz',
                 diag_excellent_desc: 'Der Teilnehmer erreicht die physiologische Empfehlung von Vitamin B12 regelmäßig und über den größten Teil der Woche verteilt.',
@@ -518,17 +518,17 @@
                 audit_meta_target: 'Ziel (≥4.0µg)',
                 audit_met: 'ERFÜLLT',
                 audit_not_met: 'NICHT ERFÜLLT',
-                scientific_title: 'Methodik und NBEA v1.0-Algorithmus',
-                scientific_p1: 'Der NutriPredict-B12 Estimation Algorithm (NBEA v1.0) ist ein mathematisches und deterministisches Modell zur Simulation des Vitamin-B12-Absorptionsverhaltens im menschlichen Darmtrakt.',
+                scientific_title: 'Methodik und BREA v1.0-Algorithmus',
+                scientific_p1: 'Der B12 Risk Estimation Algorithm (BREA v1.0) ist ein mathematisches und deterministisches Modell zur Simulation des Vitamin-B12-Absorptionsverhaltens im menschlichen Darmtrakt.',
                 scientific_subtitle_1: 'Kreuz-gestaffelte Verteilung (Cross-Staggering)',
-                scientific_p2: 'In der üblichen Ernährungspraxis sättigt die Aufnahme mehrerer konzentrierter Vitamin-B12-Quellen in einer einzigen Mahlzeit schnell die Intrinsic-Factor-Rezeptoren, was zu einer biologischen Verschwendung des Überschusses führt. Um dies zu lösen und ein optimiertes Konsumszenario widerzuspiegeln, weist NBEA v1.0 für jedes Lebensmittel dynamische Offsets in Tagen und Mahlzeiten zu. Dies verhindert vollständig das Zusammentreffen von Fleisch mit Milchprodukten (Milch) und Ei mit Fleisch in derselben Mahlzeit, wodurch die Nettoabsorption maximiert wird.',
+                scientific_p2: 'In der üblichen Ernährungspraxis sättigt die Aufnahme mehrerer konzentrierter Vitamin-B12-Quellen in einer einzigen Mahlzeit schnell die Intrinsic-Factor-Rezeptoren, was zu einer biologischen Verschwendung des Überschusses führt. Um dies zu lösen und ein optimiertes Konsumszenario widerzuspiegeln, weist BREA v1.0 für jedes Lebensmittel dynamische Offsets in Tagen und Mahlzeiten zu. Dies verhindert vollständig das Zusammentreffen von Fleisch mit Milchprodukten (Milch) und Ei mit Fleisch in derselben Mahlzeit, wodurch die Nettoabsorption maximiert wird.',
                 scientific_subtitle_2: 'Intelligente diätetische und pharmakologische Synergie',
                 scientific_p3: 'Das dynamische Zuweisungssystem bewertet die B12-Ladung von Lebensmitteln in jeder der 3 täglichen virtuellen Mahlzeiten. Angezeigte tägliche Nahrungsergänzungsmittel werden vorrangig leeren Mahlzeiten zugewiesen. Wenn alle Mahlzeiten des Tages besetzt sind, sucht der Algorithmus nach der Mahlzeit mit der geringsten Menge an B12 und verteilt das Cyanocobalamin dort. Dies umgeht die Sättigungsgrenze von 2.0 µg und validiert eine klinisch freie Co-Absorption.',
                 pdf_author_tag: 'Software-Autor:',
                 pdf_evaluated_pattern: 'Evaluiertes Ernährungsmuster:',
                 pdf_supp_tag: 'Cyanocobalamin-Supplementierung:',
                 pdf_date_tag: 'Erstellungsdatum:',
-                pdf_evaluator_tag: 'Evaluierungsalgorithmus: Deterministisches NBEA v1.0 mit optimaler Absorptionsstaffelung',
+                pdf_evaluator_tag: 'Evaluierungsalgorithmus: Deterministisches BREA v1.0 mit optimaler Absorptionsstaffelung',
                 pdf_results_summary: 'Zusammenfassung der geschätzten klinischen Metriken',
                 pdf_bullet_1: 'Modellierte täglich absorbierte Aufnahme: {val} µg im Tagesdurchschnitt.',
                 pdf_bullet_2: 'Tage, die das gesunde Tagesziel erfüllen (≥4.0 µg): {val1} von 7 Tagen ({val2}%).',
@@ -537,7 +537,7 @@
                 footer_specialist: 'Diätassistent-Ernährungsberater, Spezialist für pflanzenbasierte Ernährung',
                 footer_thanks: 'Danksagung:',
                 footer_thanks_specialist: 'Diätassistent-Ernährungsberater, Spezialist für vegetarische Ernährung',
-                footer_simulation_tag: 'Virtueller Simulator für metabolische Koinzidenz und Adäquanz NBEA v1.0',
+                footer_simulation_tag: 'Virtueller Simulator für metabolische Koinzidenz und Adäquanz BREA v1.0',
                 footer_license_panama: '🇵🇦 Erstellt in Panama, 2026 | © Jean Carlos Ruiz Mosley. Alle Rechte vorbehalten. Vervielfältigung ohne Genehmigung untersagt.',
                 food_meat: 'Fleisch',
                 food_egg: 'Ei',
@@ -559,7 +559,7 @@
                 print_report: 'Stampa Report',
                 export_csv: 'Esporta CSV',
                 methodology_title: 'Avviso di Rigore Metodologico',
-                methodology_desc: 'Questo strumento è destinato esclusivamente a scopi di ricerca. Il modello di simulazione deterministica NutriPredict-B12 Estimation Algorithm (NBEA v1.0) presuppone una settimana standardizzata basata sulle frequenze dichiarate per valutare la capacità di assimilazione sotto restrizioni fisiologiche (limite inalterabile di 2.0 µg per pasto e target giornaliero di 4.0 µg). Non sostituisce una valutazione clinica dei biomarcatori ematici. Il motore di allocazione implementa una logica di separazione incrociata intelligente degli alimenti per prevenire interazioni negative nei pasti condivisi (evitando carne-latticini, carne-uovo e uovo-latticini).',
+                methodology_desc: 'Questo strumento è destinato esclusivamente a scopi di ricerca. Il modello di simulazione deterministica B12 Risk Estimation Algorithm (BREA v1.0) presuppone una settimana standardizzata basata sulle frequenze dichiarate per valutare la capacità di assimilazione sotto restrizioni fisiologiche (limite inalterabile di 2.0 µg per pasto e target giornaliero di 4.0 µg). Non sostituisce una valutazione clinica dei biomarcatori ematici. Il motore di allocazione implementa una logica di separazione incrociata intelligente degli alimenti per prevenire interazioni negative nei pasti condivisi (evitando carne-latticini, carne-uovo e uovo-latticini).',
                 dietary_pattern: 'Modello Dietetico',
                 select_diet: 'Seleziona la dieta del partecipante',
                 diet_vegan: 'Vegano',
@@ -601,7 +601,7 @@
                 metrics_days_subtitle: '/ 7 soddisfatti',
                 metrics_absorption_title: 'Assorbimento Stimato',
                 metrics_absorption_subtitle: 'Consumo modellato con il limite fisiologico saturabile di 2.0 µg per pasto e diffusione passiva.',
-                diagnostic_title: 'Diagnosi NBEA v1.0',
+                diagnostic_title: 'Diagnosi BREA v1.0',
                 diagnostic_severity: 'Gravità del Rischio Valutata:',
                 diag_excellent: 'Adeguatezza Eccellente',
                 diag_excellent_desc: 'Il partecipante raggiunge la raccomandazione fisiologica di vitamina B12 in modo regolare e distribuito su gran parte della settimana.',
@@ -627,17 +627,17 @@
                 audit_meta_target: 'Target (≥4.0µg)',
                 audit_met: 'SODDISFATTO',
                 audit_not_met: 'NON SODDISFATTO',
-                scientific_title: 'Metodologia e Algoritmo NBEA v1.0',
-                scientific_p1: 'Il NutriPredict-B12 Estimation Algorithm (NBEA v1.0) è un modello deterministico e matematico progettato per simulare il comportamento di assorbimento della vitamina B12 nel tratto intestinale umano.',
+                scientific_title: 'Metodologia e Algoritmo BREA v1.0',
+                scientific_p1: 'Il B12 Risk Estimation Algorithm (BREA v1.0) è un modello deterministico e matematico progettato per simulare il comportamento di assorbimento della vitamina B12 nel tratto intestinale umano.',
                 scientific_subtitle_1: 'Distribuzione Anticolisione Incrociata (Cross-Staggering)',
-                scientific_p2: 'Nella pratica dietetica comune, l’ingestione di più fonti concentrate di vitamina B12 in un unico pasto satura rapidamente i recettori del Fattore Intrinseco, determinando uno spreco biologico del surplus. Per risolvere questo problema e riflettere uno scenario di consumo ottimizzato, NBEA v1.0 assegna offset dinamici nei giorni e nei pasti per ciascun alimento. Ciò impedisce completamente la coincidenza di Carne con Latticini (latte) e Uovo con Carne nello stesso pasto, massimizzando l’assorbimento netto.',
+                scientific_p2: 'Nella pratica dietetica comune, l’ingestione di più fonti concentrate di vitamina B12 in un unico pasto satura rapidamente i recettori del Fattore Intrinseco, determinando uno spreco biologico del surplus. Per risolvere questo problema e riflettere uno scenario di consumo ottimizzato, BREA v1.0 assegna offset dinamici nei giorni e nei pasti per ciascun alimento. Ciò impedisce completamente la coincidenza di Carne con Latticini (latte) e Uovo con Carne nello stesso pasto, massimizzando l’assorbimento netto.',
                 scientific_subtitle_2: 'Sinergia Dietetica e Farmacologica Intelligente',
                 scientific_p3: 'Il motore di allocazione dinamica valuta il carico di B12 degli alimenti in ciascuno dei 3 pasti virtuali giornalieri. Gli integratori giornalieri indicati sono prioritari per i pasti liberi. Se tutti i pasti della giornata sono occupati, l’algoritmo individua il pasto con la minor quantità di B12, distribuendo lì la cianocobalamina. Ciò bypassa il limite di saturazione di 2.0 µg e convalida una co-assimilazione priva di collisioni cliniche.',
                 pdf_author_tag: 'Autore del Software:',
                 pdf_evaluated_pattern: 'Modello Dietetico Valutato:',
                 pdf_supp_tag: 'Integrazione Cianocobalamina:',
                 pdf_date_tag: 'Data di Generazione:',
-                pdf_evaluator_tag: 'Algoritmo Valutatore: NBEA v1.0 deterministico con sfasamento ottimale dell’assorbimento',
+                pdf_evaluator_tag: 'Algoritmo Valutatore: BREA v1.0 deterministico con sfasamento ottimale dell’assorbimento',
                 pdf_results_summary: 'Riepilogo delle Metriche Cliniche Stimate',
                 pdf_bullet_1: 'Assunzione giornaliera assorbita modellata: {val} µg di media giornaliera.',
                 pdf_bullet_2: 'Giorni che soddisfano il target di salute giornaliero (≥4.0 µg): {val1} di 7 giorni ({val2}%).',
@@ -646,7 +646,7 @@
                 footer_specialist: 'Dietista-Nutrizionista, Specialista in Nutrizione a Base Vegetale',
                 footer_thanks: 'Ringraziamenti:',
                 footer_thanks_specialist: 'Dietista-Nutrizionista, Specialista in Nutrizione Vegetariana',
-                footer_simulation_tag: 'Simulatore virtuale di coincidenza e adeguatezza metabolica NBEA v1.0',
+                footer_simulation_tag: 'Simulatore virtuale di coincidenza e adeguatezza metabolica BREA v1.0',
                 footer_license_panama: '🇵🇦 Creato a Panama, 2026 | © Jean Carlos Ruiz Mosley. Tutti i diritti riservati. Riproduzione vietata senza autorizzazione.',
                 food_meat: 'Carne',
                 food_egg: 'Uovo',
@@ -668,7 +668,7 @@
                 print_report: '보고서 인쇄',
                 export_csv: 'CSV 내보내기',
                 methodology_title: '방법론적 엄격성 고지',
-                methodology_desc: '이 도구는 연구 목적으로만 사용됩니다. 결정론적 시뮬레이션 모델인 NutriPredict-B12 Estimation Algorithm (NBEA v1.0)은 생리적 제한(끼니당 2.0 µg의 고정된 상한선 및 일일 목표 4.0 µg) 하에서 동화 능력을 평가하기 위해 보고된 빈도를 기반으로 한 표준화된 일주일을 가정합니다. 이것은 혈액 바이오마커의 임상적 평가를 대체하지 않습니다. 배정 엔진은 공유 식사에서 부정적인 상호 작용을 방지하기 위해 스마트한 식품 교차 분리 로직을 구현합니다(고기-유제품, 고기-계란, 계란-유제품 방지).',
+                methodology_desc: '이 도구는 연구 목적으로만 사용됩니다. 결정론적 시뮬레이션 모델인 B12 Risk Estimation Algorithm (BREA v1.0)은 생리적 제한(끼니당 2.0 µg의 고정된 상한선 및 일일 목표 4.0 µg) 하에서 동화 능력을 평가하기 위해 보고된 빈도를 기반으로 한 표준화된 일주일을 가정합니다. 이것은 혈액 바이오마커의 임상적 평가를 대체하지 않습니다. 배정 엔진은 공유 식사에서 부정적인 상호 작용을 방지하기 위해 스마트한 식품 교차 분리 로직을 구현합니다(고기-유제품, 고기-계란, 계란-유제품 방지).',
                 dietary_pattern: '식사 패턴',
                 select_diet: '참가자 식단 선택',
                 diet_vegan: '비건',
@@ -710,7 +710,7 @@
                 metrics_days_subtitle: '/ 7일 달성',
                 metrics_absorption_title: '추정 흡수량',
                 metrics_absorption_subtitle: '끼니당 2.0 µg의 포화성 생리적 한계 및 수동 확산으로 모델링된 소비량.',
-                diagnostic_title: 'NBEA v1.0 진단',
+                diagnostic_title: 'BREA v1.0 진단',
                 diagnostic_severity: '평가된 위험 심각도:',
                 diag_excellent: '우수한 적절성',
                 diag_excellent_desc: '참가자는 일주일 대부분에 걸쳐 비타민 B12의 생리적 권장 사항을 정기적으로 골고루 달성하고 있습니다.',
@@ -736,17 +736,17 @@
                 audit_meta_target: '목표 (≥4.0µg)',
                 audit_met: '충족',
                 audit_not_met: '미달',
-                scientific_title: '방법론 및 NBEA v1.0 알고리즘',
-                scientific_p1: 'NutriPredict-B12 Estimation Algorithm (NBEA v1.0)은 인간의 장관 내에서 비타민 B12 흡수 행동을 시뮬레이션하기 위해 설계된 수학적 및 결정론적 모델입니다.',
+                scientific_title: '방법론 및 BREA v1.0 알고리즘',
+                scientific_p1: 'B12 Risk Estimation Algorithm (BREA v1.0)은 인간의 장관 내에서 비타민 B12 흡수 행동을 시뮬레이션하기 위해 설계된 수학적 및 결정론적 모델입니다.',
                 scientific_subtitle_1: '상호 교차 시차 분배 (Cross-Staggering)',
-                scientific_p2: '일반적인 식생활에서 한 끼에 여러 집중된 비타민 B12 공급원을 섭취하면 내인자(Intrinsic Factor) 수용체가 빠르게 포화되어 초과분이 생물학적으로 낭비됩니다. 이를 해결하고 최적화된 소비 시나리오를 반영하기 위해 NBEA v1.0은 각 식품에 대해 요일 및 식사에 동적 시차(offset)를 부여합니다. 이로써 고기와 유제품(우유) 및 계란과 고기가 동일한 식사에 겹치는 것을 완벽히 방지하여 순 흡수량을 극대화합니다.',
+                scientific_p2: '일반적인 식생활에서 한 끼에 여러 집중된 비타민 B12 공급원을 섭취하면 내인자(Intrinsic Factor) 수용체가 빠르게 포화되어 초과분이 생물학적으로 낭비됩니다. 이를 해결하고 최적화된 소비 시나리오를 반영하기 위해 BREA v1.0은 각 식품에 대해 요일 및 식사에 동적 시차(offset)를 부여합니다. 이로써 고기와 유제품(우유) 및 계란과 고기가 동일한 식사에 겹치는 것을 완벽히 방지하여 순 흡수량을 극대화합니다.',
                 scientific_subtitle_2: '스마트한 식사 및 약리학적 시너지',
                 scientific_p3: '동적 배정 엔진은 일일 3회의 가상 식사 각각에서 식품의 B12 부하를 평가합니다. 지정된 일일 보충제는 비어 있는 식사에 우선적으로 배정됩니다. 만약 하루의 모든 식사가 채워져 있다면, 알고리즘은 B12가 가장 적은 식사를 찾아 시아노코발라민을 그곳에 분배합니다. 이는 2.0 µg의 포화 한계를 우회하고 임상적 충돌이 없는 공동 흡수를 검증합니다.',
                 pdf_author_tag: '소프트웨어 저자:',
                 pdf_evaluated_pattern: '평가된 식사 패턴:',
                 pdf_supp_tag: '시아노코발라민 보충 여부:',
                 pdf_date_tag: '생성 날짜:',
-                pdf_evaluator_tag: '평가 알고리즘: 최적 흡수 시차를 적용한 결정론적 NBEA v1.0',
+                pdf_evaluator_tag: '평가 알고리즘: 최적 흡수 시차를 적용한 결정론적 BREA v1.0',
                 pdf_results_summary: '추정된 임상 지표 요약',
                 pdf_bullet_1: '모델링된 일일 흡수 섭취량: 일평균 {val} µg.',
                 pdf_bullet_2: '건강한 일일 목표(≥4.0 µg)를 충족한 일수: 7일 중 {val1}일 ({val2}%).',
@@ -755,7 +755,7 @@
                 footer_specialist: '임상영양사, 식물성 기반 영양 전문가',
                 footer_thanks: '감사의 글:',
                 footer_thanks_specialist: '임상영양사, 채식 영양 전문가',
-                footer_simulation_tag: '대사 일치 및 적절성 가상 시뮬레이터 NBEA v1.0',
+                footer_simulation_tag: '대사 일치 및 적절성 가상 시뮬레이터 BREA v1.0',
                 footer_license_panama: '🇵🇦 파나마에서 제작, 2026년 | © Jean Carlos Ruiz Mosley. 모든 권리 보유. 무단 복제 및 배포를 금지합니다.',
                 food_meat: '고기',
                 food_egg: '계란',
@@ -777,7 +777,7 @@
                 print_report: 'レポートを印刷',
                 export_csv: 'CSVをエクスポート',
                 methodology_title: '方法論的厳格さに関する通知',
-                methodology_desc: 'このツールは研究目的のみに使用されます。決定論的シミュレーションモデルであるNutriPredict-B12 Estimation Algorithm (NBEA v1.0)は、生理学的制限（食事あたり2.0 µgの不変の限界および日目標4.0 µg）下での同化能力を評価するために、申告された頻度に基づく標準化された1週間を想定しています。これは血液バイ오マーカーの臨床的評価に代わるものではありません。配分エンジンは、共有の食事における悪影響を防止するために、スマートな食品交差分離ロジックを実装しています（肉と乳製品、肉と卵、卵と乳製品の組み合わせを防止）。',
+                methodology_desc: 'このツールは研究目的のみに使用されます。決定論的シミュレーションモデルであるB12 Risk Estimation Algorithm (BREA v1.0)は、生理学的制限（食事あたり2.0 µgの不変の限界および日目標4.0 µg）下での同化能力を評価するために、申告された頻度に基づく標準化された1週間を想定しています。これは血液バイ오マーカーの臨床的評価に代わるものではありません。配分エンジンは、共有の食事における悪影響を防止するために、スマートな食品交差分離ロジックを実装しています（肉と乳製品、肉と卵、卵と乳製品の組み合わせを防止）。',
                 dietary_pattern: '食事パターン',
                 select_diet: '対象者の食事スタイルを選択',
                 diet_vegan: 'ビーガン',
@@ -819,7 +819,7 @@
                 metrics_days_subtitle: '/ 7日達成',
                 metrics_absorption_title: '推定吸収量',
                 metrics_absorption_subtitle: '食事あたり2.0 µgの飽和性生理学的限界および受動拡散でモデル化された消費。',
-                diagnostic_title: 'NBEA v1.0 診断',
+                diagnostic_title: 'BREA v1.0 診断',
                 diagnostic_severity: '評価されたリスクの深刻度:',
                 diag_excellent: '優れた充足状態',
                 diag_excellent_desc: '対象者は、ビタミンB12の生理学的推奨量を定期的かつ一週間の大部分に均等に達成しています。',
@@ -845,17 +845,17 @@
                 audit_meta_target: '目標 (≥4.0µg)',
                 audit_met: '達成',
                 audit_not_met: '未達成',
-                scientific_title: '方法論とNBEA v1.0アルゴリズム',
-                scientific_p1: 'NutriPredict-B12 Estimation Algorithm (NBEA v1.0)は、人間の腸管内でのビタミンB12吸収挙動をシミュレートするために設計された数学的かつ決定論的なモデルです。',
+                scientific_title: '方法論とBREA v1.0アルゴリズム',
+                scientific_p1: 'B12 Risk Estimation Algorithm (BREA v1.0)は、人間の腸管内でのビタミンB12吸収挙動をシミュレートするために設計された数学的かつ決定論的なモデルです。',
                 scientific_subtitle_1: '相互交差スタッガー配分 (Cross-Staggering)',
-                scientific_p2: '通常の食生活において、一度の食事で複数の高濃度ビタミンB12源を摂取すると、内因子（Intrinsic Factor）受容体が急速に飽和し、過剰分が生物学的に浪費されます。これを解決し、最適化された消費シナリオを反映するために、NBEA v1.0は各食品に対して曜日と食事に動的な時差（offset）を付与します。これにより、肉と乳製品（牛乳）および卵と肉が同じ食事に重複することを完全に防止し、純吸収量を最大化します。',
+                scientific_p2: '通常の食生活において、一度の食事で複数の高濃度ビタミンB12源を摂取すると、内因子（Intrinsic Factor）受容体が急速に飽和し、過剰分が生物学的に浪費されます。これを解決し、最適化された消費シナリオを反映するために、BREA v1.0は各食品に対して曜日と食事に動的な時差（offset）を付与します。これにより、肉と乳製品（牛乳）および卵と肉が同じ食事に重複することを完全に防止し、純吸収量を最大化します。',
                 scientific_subtitle_2: 'スマートな食事と薬理学的シナジー',
                 scientific_p3: '動的分配エンジンは、日々の3回の仮想食事それぞれで食品のB12負荷を評価します。指定された日々のサプリメントは、空いている食事に優先的に割り当てられます。もし一日のすべての食事が埋まっている場合、アルゴリズムはB12が最も少ない食事を特定し、そこにシアノコバラミンを分配します。これにより、2.0 µgの飽和限界を迂回し、臨床的衝突のない共同吸収を検証します。',
                 pdf_author_tag: 'ソフトウェア作成者:',
                 pdf_evaluated_pattern: '評価された食事スタイル:',
                 pdf_supp_tag: 'シアノコバラミンサプリメント補給:',
                 pdf_date_tag: '作成日付:',
-                pdf_evaluator_tag: '評価アルゴリズム：最適な吸収時差を適用した決定論的NBEA v1.0',
+                pdf_evaluator_tag: '評価アルゴリズム：最適な吸収時差を適用した決定論的BREA v1.0',
                 pdf_results_summary: '推定臨床指標サマリー',
                 pdf_bullet_1: 'モデル化された一日の吸収摂取量：一日平均 {val} µg。',
                 pdf_bullet_2: '健康な日目標（≥4.0 µg）を満たした日数：7日中 {val1}日 ({val2}%）。',
@@ -864,7 +864,7 @@
                 footer_specialist: '管理栄養士、植物性栄養学スペシャリスト',
                 footer_thanks: '謝辞:',
                 footer_thanks_specialist: '管理栄養士、菜食栄養学スペシャリスト',
-                footer_simulation_tag: '代謝合致および充足仮想シミュレーター NBEA v1.0',
+                footer_simulation_tag: '代謝合致および充足仮想シミュレーター BREA v1.0',
                 footer_license_panama: '🇵🇦 パナマにて作成、2026年 | © Jean Carlos Ruiz Mosley. 無断複写・転載を禁じます。',
                 food_meat: '肉',
                 food_egg: '卵',
@@ -950,7 +950,7 @@
             return Math.round((activo + pasivo) * 100) / 100;
         };
 
-        const ejecutarAlgoritmoNBEA = (alimentos, suplementacion) => {
+        const ejecutarAlgoritmoBREA = (alimentos, suplementacion) => {
             // Inicializar matriz de la semana virtual (7 días x 3 comidas)
             let semanaVirtual = Array(7).fill(null).map(() => 
                 Array(3).fill(null).map(() => ({
@@ -1163,7 +1163,7 @@
 
             // Cálculo reactivo mediante useMemo usando los alimentos filtrados y el estado de suplementación
             const resultados = useMemo(() => {
-                return ejecutarAlgoritmoNBEA(alimentosFiltrados, suplementacion);
+                return ejecutarAlgoritmoBREA(alimentosFiltrados, suplementacion);
             }, [alimentosFiltrados, suplementacion]);
 
             // Traducciones dinámicas rápidas
@@ -1197,7 +1197,7 @@
 
             const exportarExcel = () => {
                 let csvContent = "data:text/csv;charset=utf-8,";
-                csvContent += "B12 Risk Screen - Resultados del Algoritmo NBEA v1.0\r\n";
+                csvContent += "B12 Risk Screen - Resultados del Algoritmo BREA v1.0\r\n";
                 csvContent += "(C) 2026 Jean Carlos Ruiz Mosley - Todos los derechos reservados\r\n";
                 csvContent += "Investigador Principal;Jean Carlos Ruiz Mosley\r\n";
                 csvContent += `Patron Dietetico;${perfil.grupoEstudio}\r\n`;
@@ -1248,7 +1248,7 @@
                                 <div>
                                     <h1 class="font-bold text-lg leading-tight text-slate-900 dark:text-white flex items-center gap-2">
                                         B12 Risk Screen
-                                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">NBEA v1.0</span>
+                                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">BREA v1.0</span>
                                     </h1>
                                     <p class="text-xs text-slate-500 dark:text-slate-400">{t('app_subtitle')}</p>
                                 </div>
@@ -1518,7 +1518,7 @@
 
                                 </div>
 
-                                {/* CARD DIAGNÓSTICO NBEA v1.0 */}
+                                {/* CARD DIAGNÓSTICO BREA v1.0 */}
                                 <div class={`border p-6 rounded-2xl ${infoRiesgo.color} transition-all duration-300`}>
                                     <div class="flex items-center gap-3">
                                         <div class="w-8 h-8 rounded-full bg-white/40 dark:bg-black/20 flex items-center justify-center">
@@ -1681,7 +1681,7 @@
                                 </ul>
                             </div>
                             <p class="pt-4 border-t border-slate-200 text-[10px] text-slate-400 text-center">
-                                © 2026 Jean Carlos Ruiz Mosley. Todos los derechos reservados. B12 Risk Screen (NBEA v1.0).
+                                © 2026 Jean Carlos Ruiz Mosley. Todos los derechos reservados. B12 Risk Screen (BREA v1.0).
                             </p>
                         </div>
 
