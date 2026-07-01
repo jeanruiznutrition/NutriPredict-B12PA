@@ -513,63 +513,6 @@ const { useState, useEffect, useMemo } = React;
                                     </div>
                                 </div>
 
-                                {/* TABLA DE CÁLCULO PASO A PASO */}
-                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm overflow-hidden">
-                                    <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-4 flex items-center gap-2">
-                                        <i class="fa-solid fa-calculator text-brand-600"></i> {t('audit_title')}
-                                    </h3>
-                                    
-                                    <div class="overflow-x-auto">
-                                        <table class="w-full text-left border-collapse text-xs">
-                                            <thead>
-                                                <tr class="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 font-bold uppercase">
-                                                    <th class="p-3">{t('audit_day')}</th>
-                                                    <th class="p-3">{t('audit_breakfast')}</th>
-                                                    <th class="p-3">{t('audit_lunch')}</th>
-                                                    <th class="p-3">{t('audit_dinner')}</th>
-                                                    <th class="p-3">{t('audit_absorbed_day')}</th>
-                                                    <th class="p-3">{t('audit_meta_target')}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="divide-y divide-slate-150 dark:divide-slate-850">
-                                                {resultados.reporteDias.map((d, idx) => (
-                                                    <tr key={idx} class="hover:bg-slate-50 dark:hover:bg-slate-950/40">
-                                                        <td class="p-3 font-bold">{t(d.diaNombreKey)}</td>
-                                                        <td class="p-3">
-                                                            <div class="flex flex-col">
-                                                                <span>Ing: {Math.round(d.comidas[0].totalIngerido * 10) / 10}µg</span>
-                                                                <span class="text-brand-600 dark:text-brand-400 font-semibold">Abs: {d.comidas[0].totalAbsorbido}µg</span>
-                                                            </div>
-                                                        </td>
-                                                        <td class="p-3">
-                                                            <div class="flex flex-col">
-                                                                <span>Ing: {Math.round(d.comidas[1].totalIngerido * 10) / 10}µg</span>
-                                                                <span class="text-brand-600 dark:text-brand-400 font-semibold">Abs: {d.comidas[1].totalAbsorbido}µg</span>
-                                                            </div>
-                                                        </td>
-                                                        <td class="p-3">
-                                                            <div class="flex flex-col">
-                                                                <span>Ing: {Math.round(d.comidas[2].totalIngerido * 10) / 10}µg</span>
-                                                                <span class="text-brand-600 dark:text-brand-400 font-semibold">Abs: {d.comidas[2].totalAbsorbido}µg</span>
-                                                            </div>
-                                                        </td>
-                                                        <td class="p-3 font-bold text-slate-800 dark:text-slate-100">
-                                                            {Math.round(d.totalAbsorbidoDia * 10) / 10} µg
-                                                        </td>
-                                                        <td class="p-3">
-                                                            {d.cumpleMeta ? (
-                                                                <span class="px-2 py-1 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 font-bold rounded">{t('audit_met')}</span>
-                                                            ) : (
-                                                                <span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded">{t('audit_not_met')}</span>
-                                                            )}
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
                             </section>
 
                         </div>
