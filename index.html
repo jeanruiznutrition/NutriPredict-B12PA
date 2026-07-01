@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cribado Nutricional de Vitamina B12 - Plataforma Científica de Jean Carlos Ruiz Mosley</title>
+    <title>B12 Risk Screen - Plataforma Científica de Jean Carlos Ruiz Mosley</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -123,7 +123,7 @@
                 print_report: 'Imprimir Reporte',
                 export_csv: 'Exportar CSV',
                 methodology_title: 'Aviso de Rigor Metodológico',
-                methodology_desc: 'Esta herramienta es de uso de investigación. El modelo de simulación determinista Cribado Nutricional de Vitamina B12 Estimation Algorithm (NBEA v1.0) asume una semana estandarizada basada en frecuencias declaradas para evaluar la capacidad de asimilación bajo restricciones fisiológicas (techo inmutable de 2.0 µg por comida y meta de 4.0 µg diarios). No sustituye una evaluación clínica de biomarcadores sanguíneos. El motor de reparto implementa lógica de separación cruzada inteligente de alimentos para prevenir interacciones negativas en platos compartidos (evitando carne-lácteos, carne-huevo y huevo-carne).',
+                methodology_desc: 'Esta herramienta es de uso de investigación. El modelo de simulación determinista NutriPredict-B12 Estimation Algorithm (NBEA v1.0) asume una semana estandarizada basada en frecuencias declaradas para evaluar la capacidad de asimilación bajo restricciones fisiológicas (techo inmutable de 2.0 µg por comida y meta de 4.0 µg diarios). No sustituye una evaluación clínica de biomarcadores sanguíneos. El motor de reparto implementa lógica de separación cruzada inteligente de alimentos para prevenir interacciones negativas en platos compartidos (evitando carne-lácteos, carne-huevo y huevo-carne).',
                 dietary_pattern: 'Patrón Alimentario',
                 select_diet: 'Seleccione la dieta del participante',
                 diet_vegan: 'Vegano',
@@ -192,7 +192,7 @@
                 audit_met: 'CUMPLIDO',
                 audit_not_met: 'INSUPERADO',
                 scientific_title: 'Metodología y Algoritmo NBEA v1.0',
-                scientific_p1: 'El Cribado Nutricional de Vitamina B12 Estimation Algorithm (NBEA v1.0) es un modelo determinista y matemático diseñado para simular el comportamiento de absorción de vitamina B12 en el tracto intestinal.',
+                scientific_p1: 'El NutriPredict-B12 Estimation Algorithm (NBEA v1.0) es un modelo determinista y matemático diseñado para simular el comportamiento de absorción de vitamina B12 en el tracto intestinal.',
                 scientific_subtitle_1: 'Distribución Anticolisión Cruzada (Cross-Staggering)',
                 scientific_p2: 'En la práctica dietética habitual, ingerir múltiples fuentes concentradas de vitamina B12 en una única comida satura rápidamente los receptores de Factor Intrínseco, resultando en un desperdicio biológico del excedente. Para resolver esto y reflejar un escenario de consumo optimizado, el NBEA v1.0 asigna desfases dinámicos en los días y comidas para cada alimento. Así se previene de manera absoluta la coincidencia de Carne con Lácteos (leche), y Huevo con Carne en el mismo plato, maximizando la absorción neta.',
                 scientific_subtitle_2: 'Sinergia Dietética y Farmacológica Inteligente',
@@ -206,12 +206,12 @@
                 pdf_bullet_1: 'Ingesta diaria absorbida modelada: {val} µg promedio diarios.',
                 pdf_bullet_2: 'Días que cumplen la meta saludable diaria (≥4.0 µg): {val1} de 7 días ({val2}%).',
                 pdf_bullet_3: 'Nivel de Riesgo Epidemiológico: {val1} ({val2}).',
-                footer_author: 'Investigador ',
+                footer_author: 'Autor:',
                 footer_specialist: 'Nutricionista Dietista Especialista en Nutrición Basada en Plantas',
-                footer_thanks: '',
-                footer_thanks_specialist: '',
+                footer_thanks: 'Agradecimientos:',
+                footer_thanks_specialist: 'Nutricionista Dietista Especialista en Nutrición Vegetariana',
                 footer_simulation_tag: 'Simulador virtual de coincidencia y adecuación metabólica NBEA v1.0',
-                footer_license_panama: '🇵🇦 Creado en Panamá, 2026 | Distribuido bajo Licencia Creative Commons (CC BY-NC-SA 4.0)',
+                footer_license_panama: '🇵🇦 Creado en Panamá, 2026 | © Jean Carlos Ruiz Mosley. Todos los derechos reservados. Prohibida su reproducción total o parcial sin autorización.',
                 food_meat: 'Carne',
                 food_egg: 'Huevo',
                 food_milk: 'Leche',
@@ -232,7 +232,7 @@
                 print_report: 'Print Report',
                 export_csv: 'Export CSV',
                 methodology_title: 'Methodological Rigour Notice',
-                methodology_desc: 'This tool is for research purposes only. The deterministic simulation model Cribado Nutricional de Vitamina B12 Estimation Algorithm (NBEA v1.0) assumes a standardised week based on reported frequencies to evaluate assimilation capacity under physiological restrictions (immutable ceiling of 2.0 µg per meal and daily target of 4.0 µg). It does not replace a clinical assessment of blood biomarkers. The allocation engine implements smart food cross-separation logic to prevent negative interactions in shared meals (avoiding meat-dairy, meat-egg, and egg-dairy).',
+                methodology_desc: 'This tool is for research purposes only. The deterministic simulation model NutriPredict-B12 Estimation Algorithm (NBEA v1.0) assumes a standardised week based on reported frequencies to evaluate assimilation capacity under physiological restrictions (immutable ceiling of 2.0 µg per meal and daily target of 4.0 µg). It does not replace a clinical assessment of blood biomarkers. The allocation engine implements smart food cross-separation logic to prevent negative interactions in shared meals (avoiding meat-dairy, meat-egg, and egg-dairy).',
                 dietary_pattern: 'Dietary Pattern',
                 select_diet: 'Select participant diet',
                 diet_vegan: 'Vegan',
@@ -301,7 +301,7 @@
                 audit_met: 'MET',
                 audit_not_met: 'UNMET',
                 scientific_title: 'Methodology and NBEA v1.0 Algorithm',
-                scientific_p1: 'The Cribado Nutricional de Vitamina B12 Estimation Algorithm (NBEA v1.0) is a mathematical and deterministic model designed to simulate vitamin B12 absorption behaviour in the human intestinal tract.',
+                scientific_p1: 'The NutriPredict-B12 Estimation Algorithm (NBEA v1.0) is a mathematical and deterministic model designed to simulate vitamin B12 absorption behaviour in the human intestinal tract.',
                 scientific_subtitle_1: 'Cross-Staggering Distribution',
                 scientific_p2: 'In standard dietary practice, ingesting multiple concentrated sources of vitamin B12 in a single meal rapidly saturates the Intrinsic Factor receptors, resulting in biological waste of the surplus. To resolve this and reflect an optimised consumption scenario, NBEA v1.0 assigns dynamic offsets in days and meals for each food. This completely prevents the coincidence of Meat with Dairy (milk) and Egg with Meat in the same meal, maximising net absorption.',
                 scientific_subtitle_2: 'Smart Dietary and Pharmacological Synergy',
@@ -320,7 +320,7 @@
                 footer_thanks: 'Acknowledgements:',
                 footer_thanks_specialist: 'Dietitian-Nutritionist, Specialist in Vegetarian Nutrition',
                 footer_simulation_tag: 'Virtual simulation of metabolic coincidence and adequacy NBEA v1.0',
-                footer_license_panama: '🇵🇦 Created in Panama, 2026 | Distributed under Creative Commons Licence (CC BY-NC-SA 4.0)',
+                footer_license_panama: '🇵🇦 Created in Panama, 2026 | © Jean Carlos Ruiz Mosley. All Rights Reserved. Reproduction, in whole or in part, is prohibited without authorisation.',
                 food_meat: 'Meat',
                 food_egg: 'Egg',
                 food_milk: 'Milk',
@@ -341,7 +341,7 @@
                 print_report: 'Tulosta raportti',
                 export_csv: 'Vie CSV',
                 methodology_title: 'Metodologinen huomautus',
-                methodology_desc: 'Tämä työkalu on tarkoitettu vain tutkimuskäyttöön. Deterministinen simulaatiomalli Cribado Nutricional de Vitamina B12 Estimation Algorithm (NBEA v1.0) olettaa ilmoitettujen tiheyksien perusteella standardoidun viikon, jolla arvioidaan assimilaatiokapasiteettia fysiologisten rajoitusten alaisena (muuttumaton katto 2.0 µg ateriaa kohti ja päivätavoite 4.0 µg). Se ei korvaa verikoetutkimuksia. Kohdennusmoottori toteuttaa älykkään ruokien ristiinerottelulogiikan ehkäistäkseen haitallisia yhteisvaikutuksia jaetuilla aterioilla (välttäen liha-maitotuotteita, liha-kananmunaa ja kananmuna-maitotuotteita).',
+                methodology_desc: 'Tämä työkalu on tarkoitettu vain tutkimuskäyttöön. Deterministinen simulaatiomalli NutriPredict-B12 Estimation Algorithm (NBEA v1.0) olettaa ilmoitettujen tiheyksien perusteella standardoidun viikon, jolla arvioidaan assimilaatiokapasiteettia fysiologisten rajoitusten alaisena (muuttumaton katto 2.0 µg ateriaa kohti ja päivätavoite 4.0 µg). Se ei korvaa verikoetutkimuksia. Kohdennusmoottori toteuttaa älykkään ruokien ristiinerottelulogiikan ehkäistäkseen haitallisia yhteisvaikutuksia jaetuilla aterioilla (välttäen liha-maitotuotteita, liha-kananmunaa ja kananmuna-maitotuotteita).',
                 dietary_pattern: 'Ruokavaliomalli',
                 select_diet: 'Valitse osallistujan ruokavalio',
                 diet_vegan: 'Vegaani',
@@ -410,7 +410,7 @@
                 audit_met: 'TOTEUTUI',
                 audit_not_met: 'EI SAAVUTETTU',
                 scientific_title: 'Metodologia ja NBEA v1.0 -algoritmi',
-                scientific_p1: 'Cribado Nutricional de Vitamina B12 Estimation Algorithm (NBEA v1.0) on matemaattinen ja deterministinen malli, joka on suunniteltu simuloimaan B12-vitamiinin imeytymiskäyttäytymistä ihmisen suolistossa.',
+                scientific_p1: 'NutriPredict-B12 Estimation Algorithm (NBEA v1.0) on matemaattinen ja deterministinen malli, joka on suunniteltu simuloimaan B12-vitamiinin imeytymiskäyttäytymistä ihmisen suolistossa.',
                 scientific_subtitle_1: 'Ristiinporrastettu jakelu (Cross-Staggering)',
                 scientific_p2: 'Tavallisessa ruokavaliossa useiden keskittyneiden B12-vitamiinin lähteiden nauttiminen yhdellä aterialla tyydyttää nopeasti sisäisen tekijän (Intrinsic Factor) reseptorit, mikä johtaa ylimäärän biologiseen hukkaan. Tämän ratkaisemiseksi ja optimoidun kulutusskenaarion kuvaamiseksi NBEA v1.0 määrittää kullekin ruoalle dynaamiset viiveet päiville ja aterioille. Tämä estää kokonaan lihan ja maitotuotteiden tai kananmunan ja lihan osumisen samalle aterialle, mikä maksimoi nettoimeytymisen.',
                 scientific_subtitle_2: 'Älykäs ruokavalion ja farmakologian synergia',
@@ -429,7 +429,7 @@
                 footer_thanks: 'Kiitokset:',
                 footer_thanks_specialist: 'Laillistettu ravitsemusterapeutti, kasvisruokavalion asiantuntija',
                 footer_simulation_tag: 'Metabolisen yhteensopivuuden ja riittävyyden virtuaalinen simulaattori NBEA v1.0',
-                footer_license_panama: '🇵🇦 Luotu Panamassa, 2026 | Jaettu Creative Commons -lisenssillä (CC BY-NC-SA 4.0)',
+                footer_license_panama: '🇵🇦 Luotu Panamassa, 2026 | © Jean Carlos Ruiz Mosley. Kaikki oikeudet pidätetään. Kopiointi tai jakaminen ilman lupaa on kielletty.',
                 food_meat: 'Liha',
                 food_egg: 'Kananmuna',
                 food_milk: 'Maito',
@@ -450,7 +450,7 @@
                 print_report: 'Bericht drucken',
                 export_csv: 'CSV exportieren',
                 methodology_title: 'Hinweis zur methodischen Strenge',
-                methodology_desc: 'Dieses Tool dient ausschließlich Forschungszwecken. Das deterministische Simulationsmodell Cribado Nutricional de Vitamina B12 Estimation Algorithm (NBEA v1.0) nimmt eine standardisierte Woche basierend auf den gemeldeten Häufigkeiten an, um die Assimilationskapazität unter physiologischen Einschränkungen (unveränderliche Obergrenze von 2.0 µg pro Mahlzeit und Tagesziel von 4.0 µg) zu bewerten. Es ersetzt keine klinische Beurteilung von Blutbiomarkern. Das Verteilungssystem implementiert eine intelligente Kreuztrennung von Lebensmitteln, um negative Wechselwirkungen bei gemeinsamen Mahlzeiten zu verhindern (Vermeidung von Fleisch-Milchprodukten, Fleisch-Ei und Ei-Milchprodukten).',
+                methodology_desc: 'Dieses Tool dient ausschließlich Forschungszwecken. Das deterministische Simulationsmodell NutriPredict-B12 Estimation Algorithm (NBEA v1.0) nimmt eine standardisierte Woche basierend auf den gemeldeten Häufigkeiten an, um die Assimilationskapazität unter physiologischen Einschränkungen (unveränderliche Obergrenze von 2.0 µg pro Mahlzeit und Tagesziel von 4.0 µg) zu bewerten. Es ersetzt keine klinische Beurteilung von Blutbiomarkern. Das Verteilungssystem implementiert eine intelligente Kreuztrennung von Lebensmitteln, um negative Wechselwirkungen bei gemeinsamen Mahlzeiten zu verhindern (Vermeidung von Fleisch-Milchprodukten, Fleisch-Ei und Ei-Milchprodukten).',
                 dietary_pattern: 'Ernährungsmuster',
                 select_diet: 'Wählen Sie die Diät des Teilnehmers',
                 diet_vegan: 'Vegan',
@@ -519,7 +519,7 @@
                 audit_met: 'ERFÜLLT',
                 audit_not_met: 'NICHT ERFÜLLT',
                 scientific_title: 'Methodik und NBEA v1.0-Algorithmus',
-                scientific_p1: 'Der Cribado Nutricional de Vitamina B12 Estimation Algorithm (NBEA v1.0) ist ein mathematisches und deterministisches Modell zur Simulation des Vitamin-B12-Absorptionsverhaltens im menschlichen Darmtrakt.',
+                scientific_p1: 'Der NutriPredict-B12 Estimation Algorithm (NBEA v1.0) ist ein mathematisches und deterministisches Modell zur Simulation des Vitamin-B12-Absorptionsverhaltens im menschlichen Darmtrakt.',
                 scientific_subtitle_1: 'Kreuz-gestaffelte Verteilung (Cross-Staggering)',
                 scientific_p2: 'In der üblichen Ernährungspraxis sättigt die Aufnahme mehrerer konzentrierter Vitamin-B12-Quellen in einer einzigen Mahlzeit schnell die Intrinsic-Factor-Rezeptoren, was zu einer biologischen Verschwendung des Überschusses führt. Um dies zu lösen und ein optimiertes Konsumszenario widerzuspiegeln, weist NBEA v1.0 für jedes Lebensmittel dynamische Offsets in Tagen und Mahlzeiten zu. Dies verhindert vollständig das Zusammentreffen von Fleisch mit Milchprodukten (Milch) und Ei mit Fleisch in derselben Mahlzeit, wodurch die Nettoabsorption maximiert wird.',
                 scientific_subtitle_2: 'Intelligente diätetische und pharmakologische Synergie',
@@ -538,7 +538,7 @@
                 footer_thanks: 'Danksagung:',
                 footer_thanks_specialist: 'Diätassistent-Ernährungsberater, Spezialist für vegetarische Ernährung',
                 footer_simulation_tag: 'Virtueller Simulator für metabolische Koinzidenz und Adäquanz NBEA v1.0',
-                footer_license_panama: '🇵🇦 Erstellt in Panama, 2026 | Lizenziert unter Creative Commons (CC BY-NC-SA 4.0)',
+                footer_license_panama: '🇵🇦 Erstellt in Panama, 2026 | © Jean Carlos Ruiz Mosley. Alle Rechte vorbehalten. Vervielfältigung ohne Genehmigung untersagt.',
                 food_meat: 'Fleisch',
                 food_egg: 'Ei',
                 food_milk: 'Milch',
@@ -559,7 +559,7 @@
                 print_report: 'Stampa Report',
                 export_csv: 'Esporta CSV',
                 methodology_title: 'Avviso di Rigore Metodologico',
-                methodology_desc: 'Questo strumento è destinato esclusivamente a scopi di ricerca. Il modello di simulazione deterministica Cribado Nutricional de Vitamina B12 Estimation Algorithm (NBEA v1.0) presuppone una settimana standardizzata basata sulle frequenze dichiarate per valutare la capacità di assimilazione sotto restrizioni fisiologiche (limite inalterabile di 2.0 µg per pasto e target giornaliero di 4.0 µg). Non sostituisce una valutazione clinica dei biomarcatori ematici. Il motore di allocazione implementa una logica di separazione incrociata intelligente degli alimenti per prevenire interazioni negative nei pasti condivisi (evitando carne-latticini, carne-uovo e uovo-latticini).',
+                methodology_desc: 'Questo strumento è destinato esclusivamente a scopi di ricerca. Il modello di simulazione deterministica NutriPredict-B12 Estimation Algorithm (NBEA v1.0) presuppone una settimana standardizzata basata sulle frequenze dichiarate per valutare la capacità di assimilazione sotto restrizioni fisiologiche (limite inalterabile di 2.0 µg per pasto e target giornaliero di 4.0 µg). Non sostituisce una valutazione clinica dei biomarcatori ematici. Il motore di allocazione implementa una logica di separazione incrociata intelligente degli alimenti per prevenire interazioni negative nei pasti condivisi (evitando carne-latticini, carne-uovo e uovo-latticini).',
                 dietary_pattern: 'Modello Dietetico',
                 select_diet: 'Seleziona la dieta del partecipante',
                 diet_vegan: 'Vegano',
@@ -628,7 +628,7 @@
                 audit_met: 'SODDISFATTO',
                 audit_not_met: 'NON SODDISFATTO',
                 scientific_title: 'Metodologia e Algoritmo NBEA v1.0',
-                scientific_p1: 'Il Cribado Nutricional de Vitamina B12 Estimation Algorithm (NBEA v1.0) è un modello deterministico e matematico progettato per simulare il comportamento di assorbimento della vitamina B12 nel tratto intestinale umano.',
+                scientific_p1: 'Il NutriPredict-B12 Estimation Algorithm (NBEA v1.0) è un modello deterministico e matematico progettato per simulare il comportamento di assorbimento della vitamina B12 nel tratto intestinale umano.',
                 scientific_subtitle_1: 'Distribuzione Anticolisione Incrociata (Cross-Staggering)',
                 scientific_p2: 'Nella pratica dietetica comune, l’ingestione di più fonti concentrate di vitamina B12 in un unico pasto satura rapidamente i recettori del Fattore Intrinseco, determinando uno spreco biologico del surplus. Per risolvere questo problema e riflettere uno scenario di consumo ottimizzato, NBEA v1.0 assegna offset dinamici nei giorni e nei pasti per ciascun alimento. Ciò impedisce completamente la coincidenza di Carne con Latticini (latte) e Uovo con Carne nello stesso pasto, massimizzando l’assorbimento netto.',
                 scientific_subtitle_2: 'Sinergia Dietetica e Farmacologica Intelligente',
@@ -647,7 +647,7 @@
                 footer_thanks: 'Ringraziamenti:',
                 footer_thanks_specialist: 'Dietista-Nutrizionista, Specialista in Nutrizione Vegetariana',
                 footer_simulation_tag: 'Simulatore virtuale di coincidenza e adeguatezza metabolica NBEA v1.0',
-                footer_license_panama: '🇵🇦 Creato a Panama, 2026 | Distribuito sotto Licenza Creative Commons (CC BY-NC-SA 4.0)',
+                footer_license_panama: '🇵🇦 Creato a Panama, 2026 | © Jean Carlos Ruiz Mosley. Tutti i diritti riservati. Riproduzione vietata senza autorizzazione.',
                 food_meat: 'Carne',
                 food_egg: 'Uovo',
                 food_milk: 'Latte',
@@ -668,7 +668,7 @@
                 print_report: '보고서 인쇄',
                 export_csv: 'CSV 내보내기',
                 methodology_title: '방법론적 엄격성 고지',
-                methodology_desc: '이 도구는 연구 목적으로만 사용됩니다. 결정론적 시뮬레이션 모델인 Cribado Nutricional de Vitamina B12 Estimation Algorithm (NBEA v1.0)은 생리적 제한(끼니당 2.0 µg의 고정된 상한선 및 일일 목표 4.0 µg) 하에서 동화 능력을 평가하기 위해 보고된 빈도를 기반으로 한 표준화된 일주일을 가정합니다. 이것은 혈액 바이오마커의 임상적 평가를 대체하지 않습니다. 배정 엔진은 공유 식사에서 부정적인 상호 작용을 방지하기 위해 스마트한 식품 교차 분리 로직을 구현합니다(고기-유제품, 고기-계란, 계란-유제품 방지).',
+                methodology_desc: '이 도구는 연구 목적으로만 사용됩니다. 결정론적 시뮬레이션 모델인 NutriPredict-B12 Estimation Algorithm (NBEA v1.0)은 생리적 제한(끼니당 2.0 µg의 고정된 상한선 및 일일 목표 4.0 µg) 하에서 동화 능력을 평가하기 위해 보고된 빈도를 기반으로 한 표준화된 일주일을 가정합니다. 이것은 혈액 바이오마커의 임상적 평가를 대체하지 않습니다. 배정 엔진은 공유 식사에서 부정적인 상호 작용을 방지하기 위해 스마트한 식품 교차 분리 로직을 구현합니다(고기-유제품, 고기-계란, 계란-유제품 방지).',
                 dietary_pattern: '식사 패턴',
                 select_diet: '참가자 식단 선택',
                 diet_vegan: '비건',
@@ -737,7 +737,7 @@
                 audit_met: '충족',
                 audit_not_met: '미달',
                 scientific_title: '방법론 및 NBEA v1.0 알고리즘',
-                scientific_p1: 'Cribado Nutricional de Vitamina B12 Estimation Algorithm (NBEA v1.0)은 인간의 장관 내에서 비타민 B12 흡수 행동을 시뮬레이션하기 위해 설계된 수학적 및 결정론적 모델입니다.',
+                scientific_p1: 'NutriPredict-B12 Estimation Algorithm (NBEA v1.0)은 인간의 장관 내에서 비타민 B12 흡수 행동을 시뮬레이션하기 위해 설계된 수학적 및 결정론적 모델입니다.',
                 scientific_subtitle_1: '상호 교차 시차 분배 (Cross-Staggering)',
                 scientific_p2: '일반적인 식생활에서 한 끼에 여러 집중된 비타민 B12 공급원을 섭취하면 내인자(Intrinsic Factor) 수용체가 빠르게 포화되어 초과분이 생물학적으로 낭비됩니다. 이를 해결하고 최적화된 소비 시나리오를 반영하기 위해 NBEA v1.0은 각 식품에 대해 요일 및 식사에 동적 시차(offset)를 부여합니다. 이로써 고기와 유제품(우유) 및 계란과 고기가 동일한 식사에 겹치는 것을 완벽히 방지하여 순 흡수량을 극대화합니다.',
                 scientific_subtitle_2: '스마트한 식사 및 약리학적 시너지',
@@ -756,7 +756,7 @@
                 footer_thanks: '감사의 글:',
                 footer_thanks_specialist: '임상영양사, 채식 영양 전문가',
                 footer_simulation_tag: '대사 일치 및 적절성 가상 시뮬레이터 NBEA v1.0',
-                footer_license_panama: '🇵🇦 파나마에서 제작, 2026년 | 크리에이티브 커먼즈 라이선스(CC BY-NC-SA 4.0)로 배포',
+                footer_license_panama: '🇵🇦 파나마에서 제작, 2026년 | © Jean Carlos Ruiz Mosley. 모든 권리 보유. 무단 복제 및 배포를 금지합니다.',
                 food_meat: '고기',
                 food_egg: '계란',
                 food_milk: '우유',
@@ -777,7 +777,7 @@
                 print_report: 'レポートを印刷',
                 export_csv: 'CSVをエクスポート',
                 methodology_title: '方法論的厳格さに関する通知',
-                methodology_desc: 'このツールは研究目的のみに使用されます。決定論的シミュレーションモデルであるCribado Nutricional de Vitamina B12 Estimation Algorithm (NBEA v1.0)は、生理学的制限（食事あたり2.0 µgの不変の限界および日目標4.0 µg）下での同化能力を評価するために、申告された頻度に基づく標準化された1週間を想定しています。これは血液バイ오マーカーの臨床的評価に代わるものではありません。配分エンジンは、共有の食事における悪影響を防止するために、スマートな食品交差分離ロジックを実装しています（肉と乳製品、肉と卵、卵と乳製品の組み合わせを防止）。',
+                methodology_desc: 'このツールは研究目的のみに使用されます。決定論的シミュレーションモデルであるNutriPredict-B12 Estimation Algorithm (NBEA v1.0)は、生理学的制限（食事あたり2.0 µgの不変の限界および日目標4.0 µg）下での同化能力を評価するために、申告された頻度に基づく標準化された1週間を想定しています。これは血液バイ오マーカーの臨床的評価に代わるものではありません。配分エンジンは、共有の食事における悪影響を防止するために、スマートな食品交差分離ロジックを実装しています（肉と乳製品、肉と卵、卵と乳製品の組み合わせを防止）。',
                 dietary_pattern: '食事パターン',
                 select_diet: '対象者の食事スタイルを選択',
                 diet_vegan: 'ビーガン',
@@ -846,7 +846,7 @@
                 audit_met: '達成',
                 audit_not_met: '未達成',
                 scientific_title: '方法論とNBEA v1.0アルゴリズム',
-                scientific_p1: 'Cribado Nutricional de Vitamina B12 Estimation Algorithm (NBEA v1.0)は、人間の腸管内でのビタミンB12吸収挙動をシミュレートするために設計された数学的かつ決定論的なモデルです。',
+                scientific_p1: 'NutriPredict-B12 Estimation Algorithm (NBEA v1.0)は、人間の腸管内でのビタミンB12吸収挙動をシミュレートするために設計された数学的かつ決定論的なモデルです。',
                 scientific_subtitle_1: '相互交差スタッガー配分 (Cross-Staggering)',
                 scientific_p2: '通常の食生活において、一度の食事で複数の高濃度ビタミンB12源を摂取すると、内因子（Intrinsic Factor）受容体が急速に飽和し、過剰分が生物学的に浪費されます。これを解決し、最適化された消費シナリオを反映するために、NBEA v1.0は各食品に対して曜日と食事に動的な時差（offset）を付与します。これにより、肉と乳製品（牛乳）および卵と肉が同じ食事に重複することを完全に防止し、純吸収量を最大化します。',
                 scientific_subtitle_2: 'スマートな食事と薬理学的シナジー',
@@ -865,7 +865,7 @@
                 footer_thanks: '謝辞:',
                 footer_thanks_specialist: '管理栄養士、菜食栄養学スペシャリスト',
                 footer_simulation_tag: '代謝合致および充足仮想シミュレーター NBEA v1.0',
-                footer_license_panama: '🇵🇦 パナマにて作成、2026年 | クリエイティブ・コモンズ・ライセンス（CC BY-NC-SA 4.0）で配布',
+                footer_license_panama: '🇵🇦 パナマにて作成、2026年 | © Jean Carlos Ruiz Mosley. 無断複写・転載を禁じます。',
                 food_meat: '肉',
                 food_egg: '卵',
                 food_milk: '牛乳',
@@ -1197,7 +1197,8 @@
 
             const exportarExcel = () => {
                 let csvContent = "data:text/csv;charset=utf-8,";
-                csvContent += "Cribado Nutricional de Vitamina B12 - Resultados del Algoritmo NBEA v1.0\r\n";
+                csvContent += "B12 Risk Screen - Resultados del Algoritmo NBEA v1.0\r\n";
+                csvContent += "(C) 2026 Jean Carlos Ruiz Mosley - Todos los derechos reservados\r\n";
                 csvContent += "Investigador Principal;Jean Carlos Ruiz Mosley\r\n";
                 csvContent += `Patron Dietetico;${perfil.grupoEstudio}\r\n`;
                 csvContent += `Suplementacion Seleccionada;${suplementacion}\r\n`;
@@ -1224,7 +1225,7 @@
                 const encodedUri = encodeURI(csvContent);
                 const link = document.createElement("a");
                 link.setAttribute("href", encodedUri);
-                link.setAttribute("download", `Cribado_Nutricional_de_Vitamina_B12_${perfil.grupoEstudio}.csv`);
+                link.setAttribute("download", `B12_Risk_Screen_${perfil.grupoEstudio}.csv`);
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -1246,7 +1247,7 @@
                                 </div>
                                 <div>
                                     <h1 class="font-bold text-lg leading-tight text-slate-900 dark:text-white flex items-center gap-2">
-                                        Cribado Nutricional de Vitamina B12 
+                                        B12 Risk Screen
                                         <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">NBEA v1.0</span>
                                     </h1>
                                     <p class="text-xs text-slate-500 dark:text-slate-400">{t('app_subtitle')}</p>
@@ -1654,24 +1655,6 @@
                                     </div>
                                 </div>
 
-                                {/* DOCUMENTACIÓN CIENTÍFICA DEL ALGORITMO NBEA */}
-                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
-                                    <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
-                                        <i class="fa-solid fa-graduation-cap text-brand-600"></i> {t('scientific_title')}
-                                    </h3>
-                                    
-                                    <div class="text-xs text-slate-600 dark:text-slate-300 space-y-3 leading-relaxed text-justify">
-                                        <p>{t('scientific_p1')}</p>
-                                        <h4 class="font-bold text-slate-800 dark:text-slate-200 mt-2">{t('scientific_subtitle_1')}</h4>
-                                        <p>{t('scientific_p2')}</p>
-                                        <h4 class="font-bold text-slate-800 dark:text-slate-200 mt-1">{t('scientific_subtitle_2')}</h4>
-                                        <p>{t('scientific_p3')}</p>
-                                        <div class="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl text-center font-mono text-xs text-slate-800 dark:text-slate-200 border border-slate-150 dark:border-slate-850 leading-relaxed">
-                                            B12_absorbida_comida = min(B12_ingerida_comida, 2.0 µg) + (B12_ingerida_comida &gt; 2.0 ? (B12_ingerida_comida - 2.0) * 0.02 : 0)
-                                        </div>
-                                    </div>
-                                </div>
-
                             </section>
 
                         </div>
@@ -1679,7 +1662,7 @@
                         {/* SECCIÓN EXCLUSIVA PARA IMPRESIÓN REPORT / PDF */}
                         <div class="hidden print-only mt-12 p-8 border border-slate-300 rounded-3xl bg-white text-slate-900 space-y-6">
                             <div class="text-center pb-6 border-b border-slate-200">
-                                <h1 class="text-2xl font-extrabold text-slate-900">Cribado Nutricional de Vitamina B12</h1>
+                                <h1 class="text-2xl font-extrabold text-slate-900">B12 Risk Screen</h1>
                                 <p class="text-sm text-slate-500">{t('app_subtitle')}</p>
                             </div>
                             <div class="grid grid-cols-2 gap-4 text-sm">
@@ -1697,6 +1680,9 @@
                                     <li>• {t('pdf_bullet_3').replace('{val1}', infoRiesgo.clasificacion).replace('{val2}', infoRiesgo.severidad)}</li>
                                 </ul>
                             </div>
+                            <p class="pt-4 border-t border-slate-200 text-[10px] text-slate-400 text-center">
+                                © 2026 Jean Carlos Ruiz Mosley. Todos los derechos reservados. B12 Risk Screen (NBEA v1.0).
+                            </p>
                         </div>
 
                     </main>
@@ -1716,7 +1702,7 @@
                             
                             <div class="text-left md:text-right md:max-w-[48%] space-y-1">
                                 <p class="font-bold text-slate-900 dark:text-slate-200 uppercase tracking-wider text-[10px]">{t('footer_thanks')}</p>
-                                <p class="font-bold text-slate-700 dark:text-slate-300 text-sm"></p>
+                                <p class="font-bold text-slate-700 dark:text-slate-300 text-sm">MSc Eyleen Montero</p>
                                 <p class="text-slate-600 dark:text-slate-300 leading-relaxed">{t('footer_thanks_specialist')}</p>
                                 <p class="text-[10px] text-slate-400 dark:text-slate-500 pt-2 border-t border-slate-200/50 dark:border-slate-800/50 mt-2">
                                     {t('footer_simulation_tag')}
