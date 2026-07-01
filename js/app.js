@@ -588,29 +588,30 @@ const { useState, useEffect, useMemo } = React;
                                     labClasificacion = 'normal';
                                     labColor = 'emerald';
                                     labIcono = 'fa-circle-check';
-                                    labTitulo = 'Normal — Sin Deficiencia';
-                                    labDescripcion = 'Los niveles de vitamina B12 en sangre se encuentran dentro del rango de normalidad. No se evidencia deficiencia sérica.';
+                                    labTitulo = t('lab_result_normal_title');
+                                    labDescripcion = t('lab_result_normal_desc');
                                 } else if (esBajaNormal) {
                                     labClasificacion = 'baja-normal';
                                     labColor = 'amber';
                                     labIcono = 'fa-triangle-exclamation';
-                                    labTitulo = 'Baja-Normal — Zona de Incertidumbre';
-                                    labDescripcion = 'El valor se encuentra en zona gris. Se requiere un marcador funcional para determinar si existe deficiencia metabólica real.';
+                                    labTitulo = t('lab_result_lownormal_title');
+                                    labDescripcion = t('lab_result_lownormal_desc');
                                     mostrarMarcador = true;
                                 } else if (esBaja) {
                                     labClasificacion = 'baja';
                                     labColor = 'rose';
                                     labIcono = 'fa-circle-xmark';
-                                    labTitulo = 'Baja — Deficiencia';
-                                    labDescripcion = 'Los niveles de vitamina B12 son insuficientes. Se confirma deficiencia sérica. Se recomienda evaluación clínica y considerar suplementación o tratamiento.';
+                                    labTitulo = t('lab_result_low_title');
+                                    labDescripcion = t('lab_result_low_desc');
                                 }
 
                                 // Resultado final si hay marcador funcional completado
                                 if (esBajaNormal && labMarcador && labMarcadorResultado) {
+                                    const nombreMarcador = labMarcador === 'homocisteina' ? t('lab_marker_homocysteine') : t('lab_marker_mma');
                                     if (labMarcadorResultado === 'normal') {
-                                        resultadoFinal = { tipo: 'sin-deficiencia', color: 'emerald', icono: 'fa-circle-check', texto: 'Sin Deficiencia Funcional', desc: `El marcador funcional (${labMarcador === 'homocisteina' ? 'Homocisteína' : 'Ácido Metilmalónico'}) está dentro de la normalidad. A pesar del nivel sérico bajo-normal, no se confirma deficiencia metabólica activa.` };
+                                        resultadoFinal = { tipo: 'sin-deficiencia', color: 'emerald', icono: 'fa-circle-check', texto: t('lab_final_nodef_title'), desc: t('lab_final_nodef_desc').replace('{marker}', nombreMarcador) };
                                     } else {
-                                        resultadoFinal = { tipo: 'deficiencia', color: 'rose', icono: 'fa-circle-xmark', texto: 'Deficiencia Funcional Confirmada', desc: `El marcador funcional (${labMarcador === 'homocisteina' ? 'Homocisteína' : 'Ácido Metilmalónico'}) está elevado. Esto confirma deficiencia metabólica de vitamina B12 a nivel tisular. Se recomienda evaluación clínica inmediata.` };
+                                        resultadoFinal = { tipo: 'deficiencia', color: 'rose', icono: 'fa-circle-xmark', texto: t('lab_final_def_title'), desc: t('lab_final_def_desc').replace('{marker}', nombreMarcador) };
                                     }
                                 }
                             }
@@ -625,8 +626,8 @@ const { useState, useEffect, useMemo } = React;
                                                 <i class="fa-solid fa-flask-vial text-base"></i>
                                             </div>
                                             <div>
-                                                <h2 class="font-bold text-slate-900 dark:text-slate-100 text-sm">Interpretación de Resultados de Laboratorio — Vitamina B12 Sérica</h2>
-                                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Ingresa el valor de tu análisis clínico para conocer su clasificación e interpretación</p>
+                                                <h2 class="font-bold text-slate-900 dark:text-slate-100 text-sm">{t('lab_section_title')}</h2>
+                                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('lab_section_subtitle')}</p>
                                             </div>
                                         </div>
 
@@ -637,25 +638,25 @@ const { useState, useEffect, useMemo } = React;
                                                 <div class="flex items-start gap-2 p-3 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900 rounded-xl">
                                                     <i class="fa-solid fa-circle-check text-emerald-500 mt-0.5 shrink-0"></i>
                                                     <div>
-                                                        <p class="font-bold text-emerald-700 dark:text-emerald-300">Normal</p>
+                                                        <p class="font-bold text-emerald-700 dark:text-emerald-300">{t('lab_ref_normal_label')}</p>
                                                         <p class="text-emerald-600 dark:text-emerald-400 mt-0.5">&gt;542 pg/ml &nbsp;|&nbsp; &gt;400 pmol/l</p>
-                                                        <p class="text-emerald-600/80 dark:text-emerald-500 mt-0.5">Sin deficiencia</p>
+                                                        <p class="text-emerald-600/80 dark:text-emerald-500 mt-0.5">{t('lab_ref_normal_desc')}</p>
                                                     </div>
                                                 </div>
                                                 <div class="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 rounded-xl">
                                                     <i class="fa-solid fa-triangle-exclamation text-amber-500 mt-0.5 shrink-0"></i>
                                                     <div>
-                                                        <p class="font-bold text-amber-700 dark:text-amber-300">Baja-Normal</p>
+                                                        <p class="font-bold text-amber-700 dark:text-amber-300">{t('lab_ref_lownormal_label')}</p>
                                                         <p class="text-amber-600 dark:text-amber-400 mt-0.5">271–542 pg/ml &nbsp;|&nbsp; 200–400 pmol/l</p>
-                                                        <p class="text-amber-600/80 dark:text-amber-500 mt-0.5">Requiere marcador funcional</p>
+                                                        <p class="text-amber-600/80 dark:text-amber-500 mt-0.5">{t('lab_ref_lownormal_desc')}</p>
                                                     </div>
                                                 </div>
                                                 <div class="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900 rounded-xl">
                                                     <i class="fa-solid fa-circle-xmark text-rose-500 mt-0.5 shrink-0"></i>
                                                     <div>
-                                                        <p class="font-bold text-rose-700 dark:text-rose-300">Baja</p>
+                                                        <p class="font-bold text-rose-700 dark:text-rose-300">{t('lab_ref_low_label')}</p>
                                                         <p class="text-rose-600 dark:text-rose-400 mt-0.5">&lt;271 pg/ml &nbsp;|&nbsp; &lt;200 pmol/l</p>
-                                                        <p class="text-rose-600/80 dark:text-rose-500 mt-0.5">Deficiencia confirmada</p>
+                                                        <p class="text-rose-600/80 dark:text-rose-500 mt-0.5">{t('lab_ref_low_desc')}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -663,19 +664,19 @@ const { useState, useEffect, useMemo } = React;
                                             {/* Inputs */}
                                             <div class="flex flex-col sm:flex-row items-start sm:items-end gap-4">
                                                 <div class="flex-1 w-full">
-                                                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Valor del resultado</label>
+                                                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">{t('lab_value_label')}</label>
                                                     <input
                                                         type="number"
                                                         min="0"
                                                         step="any"
                                                         value={labValor}
                                                         onChange={e => { setLabValor(e.target.value); setLabMarcador(''); setLabMarcadorResultado(''); }}
-                                                        placeholder="Ej: 350"
+                                                        placeholder={t('lab_value_placeholder')}
                                                         class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 dark:focus:ring-violet-600"
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Unidad</label>
+                                                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">{t('lab_unit_label')}</label>
                                                     <div class="flex rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 text-sm font-medium">
                                                         <button
                                                             onClick={() => { setLabUnidad('pgml'); setLabMarcador(''); setLabMarcadorResultado(''); }}
@@ -697,7 +698,7 @@ const { useState, useEffect, useMemo } = React;
                                                         <p class={`font-bold text-${labColor}-700 dark:text-${labColor}-300 text-sm`}>{labTitulo}</p>
                                                         <p class={`text-xs text-${labColor}-600 dark:text-${labColor}-400 mt-1 leading-relaxed`}>{labDescripcion}</p>
                                                         <p class={`text-xs text-${labColor}-500 dark:text-${labColor}-500 mt-1 font-mono`}>
-                                                            Valor ingresado: <strong>{valorNum} {labUnidad === 'pgml' ? 'pg/ml' : 'pmol/l'}</strong>
+                                                            {t('lab_value_entered')} <strong>{valorNum} {labUnidad === 'pgml' ? 'pg/ml' : 'pmol/l'}</strong>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -708,27 +709,27 @@ const { useState, useEffect, useMemo } = React;
                                                 <div class="p-5 bg-amber-50 dark:bg-amber-950/10 border border-amber-200 dark:border-amber-900 rounded-2xl space-y-4">
                                                     <div class="flex items-center gap-2">
                                                         <i class="fa-solid fa-vials text-amber-600 dark:text-amber-400"></i>
-                                                        <p class="font-bold text-amber-800 dark:text-amber-300 text-sm">Se requiere marcador funcional</p>
+                                                        <p class="font-bold text-amber-800 dark:text-amber-300 text-sm">{t('lab_marker_required_title')}</p>
                                                     </div>
                                                     <p class="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
-                                                        El nivel sérico Baja-Normal no es concluyente por sí solo. Para determinar si existe deficiencia metabólica real, se recomienda solicitar uno de los siguientes marcadores funcionales:
+                                                        {t('lab_marker_required_desc')}
                                                     </p>
 
                                                     {/* Selección del marcador */}
                                                     <div>
-                                                        <label class="block text-xs font-semibold text-amber-800 dark:text-amber-300 mb-2">¿Qué marcador funcional se solicitó?</label>
+                                                        <label class="block text-xs font-semibold text-amber-800 dark:text-amber-300 mb-2">{t('lab_marker_which')}</label>
                                                         <div class="flex flex-col sm:flex-row gap-2">
                                                             <button
                                                                 onClick={() => { setLabMarcador('homocisteina'); setLabMarcadorResultado(''); }}
                                                                 class={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${labMarcador === 'homocisteina' ? 'bg-amber-600 text-white border-amber-600' : 'bg-white dark:bg-slate-800 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/30'}`}
                                                             >
-                                                                <i class="fa-solid fa-dna mr-1.5"></i> Homocisteína
+                                                                <i class="fa-solid fa-dna mr-1.5"></i> {t('lab_marker_homocysteine')}
                                                             </button>
                                                             <button
                                                                 onClick={() => { setLabMarcador('amd'); setLabMarcadorResultado(''); }}
                                                                 class={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${labMarcador === 'amd' ? 'bg-amber-600 text-white border-amber-600' : 'bg-white dark:bg-slate-800 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/30'}`}
                                                             >
-                                                                <i class="fa-solid fa-atom mr-1.5"></i> Ácido Metilmalónico
+                                                                <i class="fa-solid fa-atom mr-1.5"></i> {t('lab_marker_mma')}
                                                             </button>
                                                         </div>
                                                     </div>
@@ -737,20 +738,20 @@ const { useState, useEffect, useMemo } = React;
                                                     {labMarcador && (
                                                         <div>
                                                             <label class="block text-xs font-semibold text-amber-800 dark:text-amber-300 mb-2">
-                                                                Resultado de {labMarcador === 'homocisteina' ? 'Homocisteína' : 'Ácido Metilmalónico'}:
+                                                                {t('lab_marker_result_label')} {labMarcador === 'homocisteina' ? t('lab_marker_homocysteine') : t('lab_marker_mma')}:
                                                             </label>
                                                             <div class="flex flex-col sm:flex-row gap-2">
                                                                 <button
                                                                     onClick={() => setLabMarcadorResultado('normal')}
                                                                     class={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${labMarcadorResultado === 'normal' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'}`}
                                                                 >
-                                                                    <i class="fa-solid fa-circle-check mr-1.5"></i> Normal (Sin deficiencia)
+                                                                    <i class="fa-solid fa-circle-check mr-1.5"></i> {t('lab_marker_result_normal')}
                                                                 </button>
                                                                 <button
                                                                     onClick={() => setLabMarcadorResultado('elevado')}
                                                                     class={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${labMarcadorResultado === 'elevado' ? 'bg-rose-600 text-white border-rose-600' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-rose-50 dark:hover:bg-rose-950/30'}`}
                                                                 >
-                                                                    <i class="fa-solid fa-arrow-trend-up mr-1.5"></i> Elevado (Deficiencia)
+                                                                    <i class="fa-solid fa-arrow-trend-up mr-1.5"></i> {t('lab_marker_result_elevated')}
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -776,7 +777,7 @@ const { useState, useEffect, useMemo } = React;
                                                         onClick={() => { setLabValor(''); setLabMarcador(''); setLabMarcadorResultado(''); }}
                                                         class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center gap-1.5 transition-colors"
                                                     >
-                                                        <i class="fa-solid fa-rotate-left"></i> Limpiar resultado
+                                                        <i class="fa-solid fa-rotate-left"></i> {t('lab_reset_button')}
                                                     </button>
                                                 </div>
                                             )}
