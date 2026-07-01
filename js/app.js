@@ -604,22 +604,16 @@ const { useState, useEffect, useMemo } = React;
 
                     {/* --- PIE DE PÁGINA --- */}
                     <footer class="bg-slate-100 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-900 py-8 text-xs text-slate-500 dark:text-slate-400 no-print">
-                        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-start justify-between gap-8">
+                        <div class="max-w-7xl mx-auto px-4">
                             
-                            <div class="text-left md:max-w-[48%] space-y-1">
+                            <div class="text-left max-w-xl space-y-1">
                                 <p class="font-bold text-slate-900 dark:text-slate-200 uppercase tracking-wider text-[10px]">{t('footer_author')}</p>
                                 <p class="font-bold text-brand-600 dark:text-brand-400 text-sm">MEd Jean Carlos Ruiz Mosley</p>
                                 <p class="text-slate-600 dark:text-slate-300 leading-relaxed">{t('footer_specialist')}</p>
                                 <p class="text-[10px] text-slate-400 dark:text-slate-500 pt-2 border-t border-slate-200/50 dark:border-slate-800/50 mt-2">
                                     {t('footer_license_panama')}
                                 </p>
-                            </div>
-                            
-                            <div class="text-left md:text-right md:max-w-[48%] space-y-1">
-                                <p class="font-bold text-slate-900 dark:text-slate-200 uppercase tracking-wider text-[10px]">{t('footer_thanks')}</p>
-                                <p class="font-bold text-slate-700 dark:text-slate-300 text-sm">MSc Eyleen Montero</p>
-                                <p class="text-slate-600 dark:text-slate-300 leading-relaxed">{t('footer_thanks_specialist')}</p>
-                                <p class="text-[10px] text-slate-400 dark:text-slate-500 pt-2 border-t border-slate-200/50 dark:border-slate-800/50 mt-2">
+                                <p class="text-[10px] text-slate-400 dark:text-slate-500 pt-2">
                                     {t('footer_simulation_tag')}
                                 </p>
                             </div>
