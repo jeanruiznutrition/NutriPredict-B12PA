@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B12 Risk Screen - Plataforma Científica de Jean Carlos Ruiz Mosley</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome for medical/nutritional icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- React and ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel for JSX compilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Estilos propios -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+    <div id="root"></div>
+
+    <!-- Datos y constantes (JS plano, sin JSX) -->
+    <script src="js/data.js"></script>
+    <!-- Diccionario de traducción (JS plano, sin JSX) -->
+    <script src="js/i18n.js"></script>
+    <!-- Motor de cálculo B12 Risk Estimation Algorithm (JS plano, sin JSX) -->
+    <script src="js/algorithm.js"></script>
+    <!-- Interfaz React (requiere compilación JSX en el navegador) -->
+    <script type="text/babel" src="js/app.js"></script>
+
+</body>
+</html>
